@@ -1,0 +1,107 @@
+---
+import type { Artwork } from '../data/artworks';
+import { artworkImage } from '../lib/images';
+import ArtImage from './ArtImage.astro';
+
+interface Props {
+  artwork: Artwork;
+  index?: number;
+  sizes?: string;
+  /** Enable shared-element transition into the artwork page (only one per slug per page). */
+  transition?: boolean;
+  class?: string;
+  delay?: number;
+}
+const { artwork: a, index, sizes = '(max-width: 760px) 100vw, 50vw', transition = false, class: cls, delay = 0 } = Astro.props;
+const image = artworkImage(a.slug);
+---
+
+<article class:list={['work-card', cls]}>
+  <a href={`/work/${a.slug}`} class="work-card__link">
+    <div class="work-card__media" data-reveal="mask" style={`--d:${delay}s`}>
+      <div class="media-inner">
+        <div class="work-card__zoom">
+          <ArtImage
+            image={image}
+            alt={a.alt}
+            label={a.translation ? `${a.title} (${a.translation})` : a.title}
+            kicker="Artwork image — placeholder"
+            note="Original artwork file to be supplied by the artist"
+            ratio={a.placeholderRatio}
+            sizes={sizes}
+            vt={transition ? `art-${a.slug}` : undefined}
+          />
+        </div>
+      </div>
+    </div>
+    <div class="work-card__meta" data-reveal="up" style={`--d:${delay + 0.15}s`}>
+      {index !== undefined && <span class="index">{String(index).padStart(2, '0')}</span>}
+      <div class="work-card__text">
+        <h3 class="t-title work-card__title">
+          {a.title}
+          {a.translation && <em class="work-card__tr">({a.translation})</em>}
+        </h3>
+        <p class="t-meta">{a.year} · {a.medium}</p>
+      </div>
+      <span class="work-card__cta" aria-hidden="true">View work →</span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .work-card__link {
+    display: block;
+  }
+  .work-card__media {
+    overflow: hidden;
+  }
+  .work-card__zoom {
+    transition: transform 1.4s var(--ease-out);
+    transform-origin: 50% 60%;
+  }
+  .work-card__link:hover .work-card__zoom {
+    transform: scale(1.035);
+  }
+  .work-card__meta {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 18px;
+    padding-top: 18px;
+  }
+  .work-card__meta .index {
+    min-width: 2ch;
+  }
+  .work-card__title {
+    display: inline;
+  }
+  .work-card__tr {
+    margin-left: 0.3em;
+    color: var(--ink-55);
+  }
+  .work-card__text .t-meta {
+    margin-top: 6px;
+  }
+  .work-card__cta {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.6s var(--ease-out);
+    white-space: nowrap;
+  }
+  .work-card__link:hover .work-card__cta,
+  .work-card__link:focus-visible .work-card__cta {
+    opacity: 1;
+    transform: none;
+  }
+  @media (hover: none) {
+    .work-card__cta {
+      display: none;
+    }
+  }
+</style>

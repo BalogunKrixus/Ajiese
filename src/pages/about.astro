@@ -1,0 +1,471 @@
+---
+import Base from '../layouts/Base.astro';
+import ArtImage from '../components/ArtImage.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import Crop from '../components/Crop.astro';
+import Lines from '../components/Lines.astro';
+import { artworks, fullTitle } from '../data/artworks';
+import { artistPortrait, artworkImage } from '../lib/images';
+import { personSchema } from '../lib/schema';
+
+const portrait = artistPortrait();
+
+const themes = [
+  {
+    name: 'Identity',
+    text: 'Exploring how people represent themselves and how identity is communicated through appearance, clothing and personal expression.',
+  },
+  {
+    name: 'Culture',
+    text: 'Drawing from Nigerian cultural references, traditional clothing, adornment, patterns and everyday visual language.',
+  },
+  {
+    name: 'Memory',
+    text: 'Reconstructing familiar people, forms and visual experiences through contemporary digital compositions.',
+  },
+  {
+    name: 'Human connection',
+    text: 'Exploring relationships, care, belonging, fatherhood and shared experiences.',
+  },
+];
+
+// One close-up from each work for the "approach" section
+const closeUps = artworks.map((a) => ({ a, image: artworkImage(a.slug), crop: a.detailCrops[1] ?? a.detailCrops[0] }));
+
+const background = [
+  ['Based in', 'Leicester, United Kingdom'],
+  ['Studied', 'Design Innovation and Management, De Montfort University'],
+  ['Practice', 'An independent contemporary art practice in digital portraiture and collage'],
+  ['Now', 'Exhibiting, building an international audience, and developing a body of work for exhibitions, public presentation and print sales'],
+];
+---
+
+<Base
+  title="About"
+  description="About Ajiese (Christopher Balogun): a Leicester-based artist whose digital portraiture and collage explore identity, culture and memory."
+  type="profile"
+  ogImage={portrait}
+  jsonLd={personSchema(Astro.site!)}
+>
+  <!-- Hero -->
+  <section class="page-hero wrap about-hero">
+    <div class="page-hero__top" data-reveal="fade">
+      <p class="t-label">About</p>
+      <span class="t-label muted">Christopher Balogun</span>
+    </div>
+    <div class="about-hero__grid">
+      <div class="about-hero__text">
+        <Lines as="h1" class="t-display" lines={['About', '<em>Ajiese</em>']} />
+        <p class="t-lead" data-reveal="up" style="--d:0.35s">
+          An exploration of identity, culture and memory through contemporary digital portraiture.
+        </p>
+      </div>
+      <figure class="about-hero__photo" data-reveal="mask" style="--d:0.2s">
+        <div class="media-inner">
+          <ArtImage
+            image={portrait}
+            alt="Portrait of the artist Christopher Balogun (Ajiese)"
+            label="Artist photograph"
+            kicker="Photograph — placeholder"
+            note="Professional photograph of the artist to be supplied"
+            ratio={4 / 5}
+            sizes="(max-width: 860px) 100vw, 45vw"
+            eager
+          />
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Biography -->
+  <section class="section bio" aria-labelledby="bio-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <span class="index">01</span>
+          <h2 class="t-label" id="bio-title">Biography</h2>
+        </div>
+        <div class="s-head__main">
+          <p class="t-lead bio__lead" data-reveal="up">
+            Christopher Balogun, known artistically as Ajiese, is a Leicester-based artist developing a contemporary
+            digital collage and portraiture practice rooted in identity, culture and memory.
+          </p>
+          <div class="bio__cols t-body" data-reveal="up" style="--d:0.1s">
+            <p>
+              His work explores people, clothing, adornment and everyday visual references through bold geometric forms,
+              colour, pattern and distortion.
+            </p>
+            <p>
+              Working primarily through digital image-making, he reconstructs familiar subjects using simplified
+              geometry, exaggerated proportions and graphic composition.
+            </p>
+            <p>
+              His portraits move between representation and abstraction, allowing recognisable people and cultural
+              references to become expressive visual narratives.
+            </p>
+            <p>
+              With a background in Design Innovation and Management from De Montfort University, Balogun brings a
+              considered approach to composition, visual communication and experimentation.
+            </p>
+            <p>He is currently developing a body of work for exhibitions, public presentation and print sales.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Artistic statement -->
+  <section class="section statement surface-dark" aria-labelledby="statement-title">
+    <div class="wrap">
+      <div class="statement__head">
+        <span class="index">02</span>
+        <h2 class="t-label" id="statement-title">The ideas behind the work</h2>
+      </div>
+      <blockquote class="statement__quote">
+        <Lines
+          as="p"
+          class="statement__big"
+          lines={[
+            'My practice explores identity,',
+            'culture and memory through',
+            '<em>contemporary digital portraiture.</em>',
+          ]}
+        />
+        <div class="statement__rest t-body" data-reveal="up" style="--d:0.2s">
+          <p>
+            Drawing from Nigerian people, clothing, adornment and everyday visual references, I create bold compositions
+            using geometric forms, colour, pattern and distortion.
+          </p>
+          <p>
+            My work moves between representation and abstraction, reconstructing familiar subjects into expressive
+            visual narratives.
+          </p>
+          <p>
+            Through this approach, I explore how identity is communicated, remembered and experienced, while bringing
+            cultural references into contemporary digital art.
+          </p>
+        </div>
+        <footer class="t-label statement__sig" data-reveal="fade">— Ajiese, artist statement</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Themes -->
+  <section class="section themes" aria-labelledby="themes-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <span class="index">03</span>
+          <h2 class="t-label" id="themes-title">Themes and interests</h2>
+        </div>
+      </div>
+      <ol class="themes__list">
+        {
+          themes.map((t, i) => (
+            <li class="themes__row" data-reveal="up" style={`--d:${i * 0.06}s`}>
+              <span class="index">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="themes__name">{i % 2 ? <em>{t.name}</em> : t.name}</h3>
+              <p class="themes__text">{t.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Approach -->
+  <section class="section approach surface-white" aria-labelledby="approach-title">
+    <div class="wrap">
+      <div class="approach__grid">
+        <div class="approach__head">
+          <p class="t-label muted" data-reveal="fade"><span class="index">04</span>&nbsp;&nbsp;Artistic approach</p>
+          <Lines id="approach-title" class="t-heading" lines={['Between form', 'and <em>representation.</em>']} />
+        </div>
+        <div class="t-body approach__text" data-reveal="up" style="--d:0.15s">
+          <p>
+            Ajiese works primarily through digital image-making, combining simplified shapes, geometric construction,
+            graphic patterns and controlled colour.
+          </p>
+          <p>
+            His approach uses the structure of illustration and collage to create portraits that remain recognisable
+            while allowing room for distortion, exaggeration and abstraction.
+          </p>
+          <p>
+            Clothing, adornment, gesture and composition are not simply decorative elements. They contribute to the
+            meaning and identity of each work.
+          </p>
+        </div>
+      </div>
+
+      <ul class="approach__details" aria-label="Close-up details from selected works">
+        {
+          closeUps.map(({ a, image, crop }, i) => (
+            <li data-reveal="mask" style={`--d:${i * 0.12}s`}>
+              <a href={`/work/${a.slug}`} class="approach__detail">
+                <div class="media-inner">
+                  <Crop image={image} crop={crop} alt={`${fullTitle(a)}, close-up: ${crop.caption.toLowerCase()}`} ratio={3 / 4} placeholderLabel={`${fullTitle(a)} — ${crop.caption.toLowerCase()}`} />
+                </div>
+                <p class="t-meta approach__cap">
+                  <span>Detail</span> <em>{fullTitle(a)}</em>
+                </p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Background -->
+  <section class="section background" aria-labelledby="bg-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <span class="index">05</span>
+          <h2 class="t-label" id="bg-title">Background</h2>
+        </div>
+        <div class="s-head__main">
+          <dl class="bg__list">
+            {
+              background.map(([k, v], i) => (
+                <div data-reveal="up" style={`--d:${i * 0.06}s`}>
+                  <dt class="t-label muted">{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <div class="bg__links" data-reveal="up">
+            <ArrowLink href="/exhibitions">Exhibitions</ArrowLink>
+            <ArrowLink href="/press">Press &amp; media</ArrowLink>
+            <ArrowLink href="/contact">Contact the artist</ArrowLink>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about-hero__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    row-gap: 48px;
+    align-items: end;
+  }
+  .about-hero__text {
+    grid-column: 1 / span 6;
+    display: grid;
+    gap: clamp(28px, 3vw, 48px);
+    padding-bottom: 8px;
+  }
+  .about-hero__text .t-lead {
+    max-width: 18em;
+  }
+  .about-hero__photo {
+    grid-column: 8 / span 5;
+    overflow: hidden;
+  }
+  @media (max-width: 860px) {
+    .about-hero__text,
+    .about-hero__photo {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .bio__lead {
+    font-size: clamp(26px, 2.8vw, 44px);
+    max-width: 20em;
+  }
+  .bio__cols {
+    columns: 2;
+    column-gap: clamp(24px, 3vw, 56px);
+    max-width: none;
+  }
+  .bio__cols p {
+    break-inside: avoid;
+  }
+  @media (max-width: 760px) {
+    .bio__cols {
+      columns: 1;
+    }
+  }
+
+  .statement__head {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    margin-bottom: clamp(40px, 5vw, 80px);
+  }
+  .statement__quote {
+    margin: 0;
+    display: grid;
+    gap: clamp(40px, 5vw, 72px);
+  }
+  .statement__big {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(34px, 5.4vw, 96px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+  .statement__big :global(em) {
+    font-style: italic;
+  }
+  .statement__rest {
+    margin-left: calc(100% / 12 * 5);
+    max-width: 32em;
+  }
+  .statement__sig {
+    margin-left: calc(100% / 12 * 5);
+    color: var(--ink-55);
+  }
+  @media (max-width: 860px) {
+    .statement__rest,
+    .statement__sig {
+      margin-left: 0;
+    }
+  }
+
+  .themes__list {
+    border-top: 1px solid var(--line-strong);
+  }
+  .themes__row {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    align-items: baseline;
+    padding-block: clamp(24px, 3vw, 44px);
+    border-bottom: 1px solid var(--line);
+  }
+  .themes__row .index {
+    grid-column: 1 / span 1;
+  }
+  .themes__name {
+    grid-column: 2 / span 6;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(40px, 6vw, 104px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    transition: transform 0.8s var(--ease-out);
+  }
+  .themes__name em {
+    font-style: italic;
+  }
+  .themes__row:hover .themes__name {
+    transform: translateX(10px);
+  }
+  .themes__text {
+    grid-column: 9 / span 4;
+    color: var(--ink-70);
+    font-size: 15px;
+    max-width: 26em;
+  }
+  @media (max-width: 860px) {
+    .themes__row .index {
+      grid-column: 1 / -1;
+      margin-bottom: 8px;
+    }
+    .themes__name {
+      grid-column: 1 / -1;
+    }
+    .themes__text {
+      grid-column: 1 / -1;
+      margin-top: 14px;
+    }
+  }
+
+  .approach__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    row-gap: 32px;
+    align-items: end;
+    margin-bottom: clamp(56px, 7vw, 112px);
+  }
+  .approach__head {
+    grid-column: 1 / span 7;
+    display: grid;
+    gap: 28px;
+  }
+  .approach__text {
+    grid-column: 9 / span 4;
+  }
+  @media (max-width: 960px) {
+    .approach__head,
+    .approach__text {
+      grid-column: 1 / -1;
+    }
+  }
+  .approach__details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+    align-items: start;
+  }
+  .approach__details li {
+    overflow: hidden;
+  }
+  .approach__details li:nth-child(2) {
+    margin-top: clamp(40px, 8vw, 140px);
+  }
+  .approach__detail .media-inner {
+    overflow: hidden;
+  }
+  .approach__cap {
+    display: flex;
+    gap: 10px;
+    padding-top: 12px;
+  }
+  .approach__cap em {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--ink);
+  }
+  @media (max-width: 760px) {
+    .approach__details {
+      grid-template-columns: 1fr 1fr;
+    }
+    .approach__details li:nth-child(2) {
+      margin-top: 48px;
+    }
+    .approach__details li:nth-child(3) {
+      grid-column: 1 / -1;
+      width: 70%;
+      justify-self: center;
+    }
+  }
+
+  .bg__list {
+    border-top: 1px solid var(--line-strong);
+  }
+  .bg__list > div {
+    display: grid;
+    grid-template-columns: 10em 1fr;
+    gap: 24px;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .bg__list dt {
+    padding-top: 6px;
+  }
+  .bg__list dd {
+    font-family: var(--serif);
+    font-size: clamp(20px, 1.8vw, 28px);
+    line-height: 1.25;
+  }
+  .bg__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 36px;
+    margin-top: 24px;
+  }
+  @media (max-width: 560px) {
+    .bg__list > div {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>

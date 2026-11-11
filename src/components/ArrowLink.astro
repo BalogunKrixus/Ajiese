@@ -1,0 +1,18 @@
+---
+interface Props {
+  href: string;
+  external?: boolean;
+  class?: string;
+}
+const { href, external = false, class: cls } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={['link-arrow', cls]}
+  {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+>
+  <span><slot /></span>
+  <span class:list={['arrow', { 'arrow--ne': external }]} aria-hidden="true">{external ? '↗' : '→'}</span>
+  {external && <span class="sr-only">(opens in a new tab)</span>}
+</a>

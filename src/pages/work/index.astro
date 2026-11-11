@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import Lines from '../../components/Lines.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import ArrowLink from '../../components/ArrowLink.astro';
+import { artworks } from '../../data/artworks';
+---
+
+<Base
+  title="Works"
+  description="Selected works by Ajiese: contemporary digital portraits exploring identity, culture, memory and human connection."
+>
+  <section class="page-hero wrap">
+    <div class="page-hero__top" data-reveal="fade">
+      <p class="t-label">Works</p>
+      <span class="index">({String(artworks.length).padStart(2, '0')})</span>
+    </div>
+    <Lines as="h1" class="t-display" lines={['An evolving', 'body of <em>work.</em>']} />
+    <p class="t-lead page-hero__lead" data-reveal="up" style="--d:0.3s">
+      A selection of works exploring identity, culture, memory and human connection.
+    </p>
+  </section>
+
+  <section class="wrap works-index" aria-label="All works">
+    {artworks.map((a, i) => <WorkCard artwork={a} index={i + 1} transition sizes="(max-width: 760px) 100vw, 45vw" delay={(i % 2) * 0.12} />)}
+  </section>
+
+  <section class="wrap works-note">
+    <p class="t-meta">New works will be added here as the practice develops.</p>
+    <ArrowLink href="/contact?subject=Artwork%20enquiry">Artwork enquiries</ArrowLink>
+  </section>
+</Base>
+
+<style>
+  .works-index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(24px, 6vw, 120px);
+    row-gap: clamp(72px, 8vw, 140px);
+    align-items: start;
+  }
+  .works-index > :global(:nth-child(even)) {
+    margin-top: clamp(0px, 12vw, 220px);
+  }
+  .works-note {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+    margin-top: clamp(80px, 10vw, 160px);
+    padding-top: 20px;
+    padding-bottom: var(--section);
+  }
+  @media (max-width: 760px) {
+    .works-index {
+      grid-template-columns: 1fr;
+    }
+    .works-index > :global(:nth-child(even)) {
+      margin-top: 0;
+    }
+  }
+</style>

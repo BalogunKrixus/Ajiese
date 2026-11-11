@@ -1,0 +1,488 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ArtImage from '../../components/ArtImage.astro';
+import ArrowLink from '../../components/ArrowLink.astro';
+import Lines from '../../components/Lines.astro';
+import Crop from '../../components/Crop.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import { artworks, fullTitle, getArtwork, type Artwork } from '../../data/artworks';
+import { exhibitions } from '../../data/exhibitions';
+import { artworkDetails, artworkImage } from '../../lib/images';
+import { exhibitionStatus, formatDateRange } from '../../lib/format';
+import { artworkSchema } from '../../lib/schema';
+
+export const getStaticPaths = (() =>
+  artworks.map((a) => ({ params: { slug: a.slug }, props: { artwork: a } }))) satisfies GetStaticPaths;
+
+const { artwork: a } = Astro.props as { artwork: Artwork };
+const i = artworks.findIndex((x) => x.slug === a.slug);
+const prev = artworks[(i - 1 + artworks.length) % artworks.length];
+const next = artworks[(i + 1) % artworks.length];
+const related = (a.related ?? artworks.filter((x) => x.slug !== a.slug).map((x) => x.slug))
+  .map((s) => getArtwork(s))
+  .filter((x): x is Artwork => Boolean(x))
+  .slice(0, 3);
+
+const image = artworkImage(a.slug);
+const ratio = image ? image.width / image.height : a.placeholderRatio;
+const details = artworkDetails(a.slug);
+const shownAt = exhibitions.filter((e) => e.artwork === a.slug);
+const schemaImage = image ? new URL((await getImage({ src: image, width: 1600, format: 'jpg' })).src, Astro.site).href : undefined;
+
+const enquiry = `/contact?subject=${encodeURIComponent(`Artwork enquiry: ${fullTitle(a)}`)}`;
+const meta: [string, string][] = [
+  ['Title', fullTitle(a)],
+  ['Artist', 'Ajiese (Christopher Balogun)'],
+  ['Year', String(a.year)],
+  ['Medium', a.medium],
+  ['Dimensions', a.dimensions ?? 'To be confirmed'],
+  ['Category', a.category],
+];
+---
+
+<Base
+  title={fullTitle(a)}
+  description={`${fullTitle(a)} (${a.year}) by Ajiese. ${a.summary}`}
+  ogImage={image}
+  ogImageAlt={a.alt}
+  type="article"
+  jsonLd={artworkSchema(a, Astro.site!, schemaImage)}
+>
+  <!-- Title -->
+  <section class="art-hero wrap">
+    <div class="art-hero__top" data-reveal="fade">
+      <a href="/work" class="t-label link-underline">Works</a>
+      <span class="index">{String(i + 1).padStart(2, '0')} / {String(artworks.length).padStart(2, '0')}</span>
+    </div>
+    <Lines
+      as="h1"
+      class="t-display art-hero__title"
+      lines={a.translation ? [a.title, `<em>${a.translation}</em>`] : a.title.split(' ').length > 2 ? [a.title.split(' ').slice(0, -1).join(' '), a.title.split(' ').slice(-1)[0]] : [a.title]}
+    />
+    <div class="art-hero__meta" data-reveal="up" style="--d:0.25s">
+      <p class="t-label">{a.medium} / {a.year}</p>
+      <p class="t-meta art-hero__summary">{a.summary}</p>
+    </div>
+  </section>
+
+  <!-- Artwork -->
+  <section class="stage surface-white" aria-label="Artwork">
+    <div class="wrap">
+      <figure class="stage__frame" style={`--ratio:${ratio}`}>
+        <div data-reveal="mask">
+          <div class="media-inner">
+            <ArtImage
+              image={image}
+              alt={a.alt}
+              label={fullTitle(a)}
+              kicker="Artwork image — placeholder"
+              note="Original high-resolution artwork file to be supplied by the artist"
+              ratio={a.placeholderRatio}
+              sizes="(max-width: 760px) 100vw, 60vw"
+              eager
+              vt={`art-${a.slug}`}
+            />
+          </div>
+        </div>
+        <figcaption class="t-meta stage__caption">
+          <span><em>{fullTitle(a)}</em>, {a.year}. {a.medium}.</span>
+          <span>© Christopher Balogun</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Information -->
+  <section class="section info">
+    <div class="wrap grid">
+      <aside class="info__meta" aria-label="Artwork details">
+        <dl class="meta-table" data-reveal="up">
+          {
+            meta.map(([k, v]) => (
+              <div>
+                <dt>{k}</dt>
+                <dd class:list={{ muted: k === 'Dimensions' && !a.dimensions }}>{v}</dd>
+              </div>
+            ))
+          }
+          <div>
+            <dt>Themes</dt>
+            <dd>
+              <ul class="themes">{a.themes.map((t) => <li>{t}</li>)}</ul>
+            </dd>
+          </div>
+          {
+            a.availability && (
+              <div>
+                <dt>Availability</dt>
+                <dd>{a.availability}</dd>
+              </div>
+            )
+          }
+        </dl>
+        <div data-reveal="up" style="--d:0.15s">
+          <ArrowLink href={enquiry}>Enquire about this work</ArrowLink>
+        </div>
+      </aside>
+
+      <div class="info__text">
+        <p class="t-label muted" data-reveal="fade">About the work</p>
+        <p class="t-lead info__lead" data-reveal="up">{a.description[0]}</p>
+        {
+          a.description.length > 1 && (
+            <div class="t-body" data-reveal="up" style="--d:0.1s">
+              {a.description.slice(1).map((p) => <p>{p}</p>)}
+            </div>
+          )
+        }
+
+        {
+          shownAt.length > 0 && (
+            <div class="shown" data-reveal="up" style="--d:0.15s">
+              <p class="t-label muted">Exhibitions</p>
+              <ul>
+                {shownAt.map((ex) => {
+                  const st = exhibitionStatus(ex);
+                  return (
+                    <li>
+                      <a href={`/exhibitions/${ex.slug}`} class="shown__row">
+                        <span class="shown__title">{ex.title}</span>
+                        <span class="t-meta">{[ex.venue, ex.city].filter(Boolean).join(', ') || ex.statusNote}</span>
+                        <span class="t-meta">{formatDateRange(ex)}</span>
+                        <span class={`status status--${st.key}`}>{st.label}</span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Details & close-ups -->
+  <section class="details" aria-labelledby="details-title" data-sequence>
+    <div class="wrap details__head">
+      <div>
+        <p class="t-label muted">Details</p>
+        <h2 class="t-title" id="details-title">Pattern, shape and <em>construction.</em></h2>
+      </div>
+      <div class="details__nav">
+        <button type="button" class="seq-btn" data-sequence-prev aria-label="Previous detail">←</button>
+        <button type="button" class="seq-btn" data-sequence-next aria-label="Next detail">→</button>
+      </div>
+    </div>
+    <ul class="details__track" data-sequence-track tabindex="0" aria-label="Close-up details, scroll horizontally">
+      {
+        details.length > 0
+          ? details.map((d, n) => (
+              <li class="details__item details__item--free">
+                <ArtImage image={d} alt={`${fullTitle(a)}, detail ${n + 1}`} label="" sizes="(max-width: 760px) 80vw, 40vw" />
+                <p class="t-meta">Detail {String(n + 1).padStart(2, '0')}</p>
+              </li>
+            ))
+          : a.detailCrops.map((c, n) => (
+              <li class="details__item">
+                <Crop image={image} crop={c} alt={`${fullTitle(a)}, close-up: ${c.caption.toLowerCase()}`} />
+                <p class="t-meta">
+                  <span class="index">{String(n + 1).padStart(2, '0')}</span> {c.caption}
+                </p>
+              </li>
+            ))
+      }
+    </ul>
+  </section>
+
+  <!-- Previous / next -->
+  <nav class="pn wrap" aria-label="Artwork navigation">
+    <a href={`/work/${prev.slug}`} class="pn__link" rel="prev">
+      <span class="t-label muted">← Previous work</span>
+      <span class="t-heading pn__title">{prev.title}</span>
+    </a>
+    <a href={`/work/${next.slug}`} class="pn__link pn__link--next" rel="next">
+      <span class="t-label muted">Next work →</span>
+      <span class="t-heading pn__title">{next.title}</span>
+    </a>
+  </nav>
+
+  <!-- More works -->
+  <section class="section more" aria-labelledby="more-title">
+    <div class="wrap">
+      <div class="more__head">
+        <h2 class="t-label" id="more-title">Explore more works</h2>
+        <ArrowLink href="/work">All works</ArrowLink>
+      </div>
+      <div class="more__grid" style={`--n:${Math.max(2, related.length)}`}>
+        {related.map((r, n) => <WorkCard artwork={r} sizes="(max-width: 760px) 100vw, 33vw" delay={n * 0.1} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .art-hero {
+    padding-top: calc(var(--nav-h) + clamp(32px, 6vw, 96px));
+    padding-bottom: clamp(40px, 5vw, 80px);
+  }
+  .art-hero__top {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    margin-bottom: clamp(40px, 6vw, 96px);
+  }
+  .art-hero__title {
+    text-transform: uppercase;
+    font-size: clamp(54px, 11vw, 200px);
+    letter-spacing: -0.01em;
+  }
+  .art-hero__title :global(em) {
+    text-transform: none;
+    font-size: 0.6em;
+    color: var(--ink-55);
+  }
+  .art-hero__meta {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 28em);
+    gap: 24px;
+    align-items: start;
+    margin-top: clamp(32px, 4vw, 56px);
+  }
+  .art-hero__summary {
+    font-size: 15px;
+  }
+  @media (max-width: 760px) {
+    .art-hero__meta {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .stage {
+    padding-block: clamp(32px, 6vw, 112px);
+  }
+  .stage__frame {
+    width: min(100%, calc(84svh * var(--ratio)));
+    margin-inline: auto;
+  }
+  .stage__caption {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding-top: 14px;
+    font-size: 12px;
+  }
+  .stage__caption em {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .info .grid {
+    row-gap: 56px;
+  }
+  .info__meta {
+    grid-column: 1 / span 4;
+    display: grid;
+    gap: 28px;
+    align-content: start;
+    justify-items: start;
+  }
+  .info__text {
+    grid-column: 6 / span 7;
+    display: grid;
+    gap: clamp(24px, 3vw, 40px);
+    align-content: start;
+  }
+  .info__lead {
+    font-size: clamp(24px, 2.4vw, 38px);
+    max-width: 22em;
+  }
+  @media (max-width: 860px) {
+    .info__meta,
+    .info__text {
+      grid-column: 1 / -1;
+    }
+    .info__text {
+      grid-row: 1;
+    }
+  }
+  .meta-table {
+    width: 100%;
+    border-top: 1px solid var(--line-strong);
+  }
+  .meta-table > div {
+    display: grid;
+    grid-template-columns: 8.5em 1fr;
+    gap: 16px;
+    padding-block: 13px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .meta-table dt {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-55);
+    padding-top: 2px;
+  }
+  .themes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+  }
+  .themes li:not(:last-child)::after {
+    content: ',\00a0';
+  }
+
+  .shown {
+    display: grid;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .shown ul {
+    border-top: 1px solid var(--line);
+  }
+  .shown__row {
+    display: grid;
+    grid-template-columns: 1.3fr 1.3fr 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding-block: 14px;
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.5s var(--ease-out);
+  }
+  .shown__row:hover {
+    padding-left: 8px;
+  }
+  .shown__title {
+    font-family: var(--serif);
+    font-size: 20px;
+  }
+  @media (max-width: 760px) {
+    .shown__title {
+      grid-column: 1 / -1;
+    }
+    .shown__row {
+      grid-template-columns: 1fr auto;
+      gap: 4px 16px;
+    }
+  }
+
+  .details {
+    padding-bottom: var(--section);
+  }
+  .details__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+  .details__head h2 {
+    margin-top: 12px;
+  }
+  .details__nav {
+    display: flex;
+    gap: 8px;
+  }
+  .seq-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      opacity 0.3s ease;
+  }
+  .seq-btn:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--ivory);
+  }
+  .seq-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .details__track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    padding-inline: var(--gutter);
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+  }
+  .details__item {
+    flex: 0 0 clamp(260px, 34vw, 560px);
+    scroll-snap-align: start;
+    display: grid;
+    gap: 12px;
+  }
+  .details__item .t-meta .index {
+    margin-right: 8px;
+  }
+  .pn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .pn__link {
+    display: grid;
+    gap: 14px;
+    padding-block: clamp(32px, 5vw, 72px);
+    padding-right: 24px;
+  }
+  .pn__link--next {
+    text-align: right;
+    border-left: 1px solid var(--line);
+    padding-right: 0;
+    padding-left: 24px;
+  }
+  .pn__title {
+    font-size: clamp(30px, 4.4vw, 76px);
+    transition:
+      transform 0.7s var(--ease-out),
+      font-style 0s;
+  }
+  .pn__link:hover .pn__title {
+    font-style: italic;
+    transform: translateX(-8px);
+  }
+  .pn__link--next:hover .pn__title {
+    transform: translateX(8px);
+  }
+
+  .more__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
+  }
+  .more__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+    max-width: calc(var(--n, 3) * 480px);
+    gap: clamp(24px, 3vw, 48px);
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .more__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .more__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

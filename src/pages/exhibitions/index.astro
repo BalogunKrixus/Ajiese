@@ -1,0 +1,256 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArtImage from '../../components/ArtImage.astro';
+import Lines from '../../components/Lines.astro';
+import { exhibitions } from '../../data/exhibitions';
+import { fullTitle, getArtwork } from '../../data/artworks';
+import { artworkImage, exhibitionImages } from '../../lib/images';
+import { exhibitionStatus, formatDateRange, place, sortExhibitions } from '../../lib/format';
+
+const list = sortExhibitions(exhibitions);
+const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
+---
+
+<Base
+  title="Exhibitions"
+  description="Exhibitions and selections for Ajiese, including RESONANCE (OYEZ Arts), Elephant Vision Lab (Hit & Run) and Sartori Exhibitions in 2026."
+>
+  <section class="page-hero wrap">
+    <div class="page-hero__top" data-reveal="fade">
+      <p class="t-label">Exhibitions</p>
+      <span class="index">({String(list.length).padStart(2, '0')})</span>
+    </div>
+    <Lines as="h1" class="t-display" lines={['The work,', 'in <em>public.</em>']} />
+    <p class="t-lead page-hero__lead" data-reveal="up" style="--d:0.3s">
+      An archive of exhibitions and selections, documenting how the work meets its audiences.
+    </p>
+  </section>
+
+  <section class="wrap archive" aria-label="Exhibition archive">
+    {
+      years.map((year) => (
+        <div class="archive__year">
+          <p class="archive__yr" aria-hidden="true">
+            <span>{year}</span>
+          </p>
+          <h2 class="sr-only">{year}</h2>
+          <ol class="archive__list">
+            {list
+              .filter((e) => e.year === year)
+              .map((ex, i) => {
+                const st = exhibitionStatus(ex);
+                const art = getArtwork(ex.artwork);
+                const photo = exhibitionImages(ex.slug)[0];
+                const where = [ex.venue, place(ex)].filter(Boolean).join(', ');
+                return (
+                  <li class="entry" data-reveal="up" style={`--d:${(i % 2) * 0.08}s`}>
+                    <a href={`/exhibitions/${ex.slug}`} class="entry__link">
+                      <div class="entry__media">
+                        <div class="entry__zoom">
+                          {photo ? (
+                            <ArtImage image={photo} alt={`${ex.title}: exhibition photograph`} label="" sizes="(max-width: 760px) 100vw, 25vw" />
+                          ) : (
+                            <ArtImage
+                              image={art ? artworkImage(art.slug) : undefined}
+                              alt={art ? art.alt : ''}
+                              label={art ? fullTitle(art) : ex.title}
+                              kicker="Artwork image — placeholder"
+                              note="Installation photographs to follow"
+                              ratio={art?.placeholderRatio ?? 3 / 4}
+                              sizes="(max-width: 760px) 100vw, 25vw"
+                              compact
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <div class="entry__main">
+                        <div class="entry__top">
+                          <span class={`status status--${st.key}`}>{st.label}</span>
+                          <span class="t-meta">{formatDateRange(ex)}</span>
+                        </div>
+                        <h3 class="entry__title">{ex.title}</h3>
+                        {ex.organiser && ex.organiser !== ex.title && <p class="entry__org">{ex.organiser}</p>}
+                      </div>
+                      <dl class="entry__dl">
+                        {where && (
+                          <div>
+                            <dt>Venue</dt>
+                            <dd>{where}</dd>
+                          </div>
+                        )}
+                        {art && (
+                          <div>
+                            <dt>Work</dt>
+                            <dd>
+                              <em>{fullTitle(art)}</em>
+                            </dd>
+                          </div>
+                        )}
+                        {ex.statusNote && (
+                          <div>
+                            <dt>Status</dt>
+                            <dd>{ex.statusNote}</dd>
+                          </div>
+                        )}
+                        <div class="entry__more" aria-hidden="true">
+                          View exhibition →
+                        </div>
+                      </dl>
+                    </a>
+                  </li>
+                );
+              })}
+          </ol>
+        </div>
+      ))
+    }
+  </section>
+
+  <section class="wrap archive-note">
+    <p class="t-meta">
+      Further exhibitions will be added as they are confirmed. Statuses reflect confirmed information only.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .archive__year {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    border-top: 1px solid var(--line-strong);
+  }
+  .archive__yr {
+    grid-column: 1 / span 2;
+    padding-top: 24px;
+  }
+  .archive__yr span {
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+    display: block;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(40px, 5vw, 88px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+  .archive__list {
+    grid-column: 3 / -1;
+  }
+  .entry + .entry {
+    border-top: 1px solid var(--line);
+  }
+  .entry__link {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr);
+    gap: var(--col-gap);
+    padding-block: clamp(24px, 3vw, 44px);
+    align-items: start;
+  }
+  .entry__media {
+    overflow: hidden;
+  }
+  .entry__zoom {
+    transition: transform 1.2s var(--ease-out);
+  }
+  .entry__link:hover .entry__zoom {
+    transform: scale(1.04);
+  }
+  .entry__main {
+    display: grid;
+    gap: 14px;
+  }
+  .entry__top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    align-items: center;
+  }
+  .entry__title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(32px, 3.4vw, 60px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    transition: transform 0.7s var(--ease-out);
+  }
+  .entry__link:hover .entry__title {
+    transform: translateX(8px);
+    font-style: italic;
+  }
+  .entry__org {
+    font-size: 15px;
+    color: var(--ink-70);
+  }
+  .entry__dl {
+    display: grid;
+    gap: 10px;
+    font-size: 14px;
+    padding-top: 4px;
+  }
+  .entry__dl > div:not(.entry__more) {
+    display: grid;
+    grid-template-columns: 5.5em 1fr;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .entry__dl dt {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-55);
+    padding-top: 2px;
+  }
+  .entry__dl em {
+    font-family: var(--serif);
+    font-size: 1.15em;
+  }
+  .entry__more {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding-top: 6px;
+    opacity: 0.55;
+    transition: opacity 0.4s ease;
+  }
+  .entry__link:hover .entry__more {
+    opacity: 1;
+  }
+  .archive-note {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    padding-bottom: var(--section);
+  }
+  @media (max-width: 960px) {
+    .archive__yr {
+      grid-column: 1 / -1;
+    }
+    .archive__yr span {
+      position: static;
+    }
+    .archive__list {
+      grid-column: 1 / -1;
+    }
+    .entry__link {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+    .entry__dl {
+      grid-column: 2;
+    }
+  }
+  @media (max-width: 560px) {
+    .entry__link {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      column-gap: 16px;
+      row-gap: 18px;
+    }
+    .entry__dl {
+      grid-column: 1 / -1;
+    }
+    .entry__title {
+      font-size: 28px;
+    }
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+/**
+ * Splits a heading into lines for the masked line-reveal.
+ * Pass lines as an array; each entry may contain inline HTML (e.g. <em>).
+ */
+interface Props {
+  lines: string[];
+  as?: 'h1' | 'h2' | 'h3' | 'p';
+  class?: string;
+  delay?: number;
+  id?: string;
+}
+const { lines, as: Tag = 'h2', class: cls, delay = 0, id } = Astro.props;
+const plain = lines.map((l) => l.replace(/<[^>]+>/g, '')).join(' ');
+---
+
+<Tag class={cls} data-reveal="lines" style={`--d:${delay}s`} id={id}>
+  <span class="sr-only">{plain}</span>
+  {
+    lines.map((l, i) => (
+      <span class="line" aria-hidden="true">
+        <span style={`--i:${i}`} set:html={l} />
+      </span>
+    ))
+  }
+</Tag>

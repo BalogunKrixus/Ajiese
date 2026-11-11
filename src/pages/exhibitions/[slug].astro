@@ -1,0 +1,375 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import ArtImage from '../../components/ArtImage.astro';
+import ArrowLink from '../../components/ArrowLink.astro';
+import Lines from '../../components/Lines.astro';
+import Placeholder from '../../components/Placeholder.astro';
+import { exhibitions, type Exhibition } from '../../data/exhibitions';
+import { fullTitle, getArtwork } from '../../data/artworks';
+import { artworkImage, exhibitionImages } from '../../lib/images';
+import { exhibitionStatus, formatDateRange, place, sortExhibitions } from '../../lib/format';
+import { exhibitionSchema } from '../../lib/schema';
+
+export const getStaticPaths = (() =>
+  exhibitions.map((e) => ({ params: { slug: e.slug }, props: { ex: e } }))) satisfies GetStaticPaths;
+
+const { ex } = Astro.props as { ex: Exhibition };
+const st = exhibitionStatus(ex);
+const art = getArtwork(ex.artwork);
+const artImg = art ? artworkImage(art.slug) : undefined;
+const photos = exhibitionImages(ex.slug);
+const others = sortExhibitions(exhibitions.filter((e) => e.slug !== ex.slug));
+const location = place(ex);
+const mapUrl = ex.venue
+  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([ex.venue, ex.city, ex.country].filter(Boolean).join(', '))}`
+  : null;
+
+const facts: [string, string][] = [
+  ['Organiser', ex.organiser ?? 'To be confirmed'],
+  ['Venue', ex.venue ?? 'To be confirmed'],
+  ['Location', location || 'To be confirmed'],
+  ['Dates', ex.startDate ? formatDateRange(ex) : ex.status === 'exhibited' ? String(ex.year) : 'To be confirmed'],
+];
+---
+
+<Base
+  title={`${ex.title}${ex.organiser && ex.organiser !== ex.title ? ` — ${ex.organiser}` : ''}`}
+  description={ex.introduction[0]}
+  ogImage={photos[0] ?? artImg}
+  jsonLd={exhibitionSchema(ex, Astro.site!)}
+>
+  <section class="page-hero wrap ex-hero">
+    <div class="page-hero__top" data-reveal="fade">
+      <a href="/exhibitions" class="t-label link-underline">← Exhibitions</a>
+      <span class={`status status--${st.key}`}>{st.label}</span>
+    </div>
+    <Lines as="h1" class="t-display ex-hero__title" lines={[ex.title]} />
+    {ex.organiser && ex.organiser !== ex.title && (
+      <p class="t-lead ex-hero__org" data-reveal="up" style="--d:0.2s">
+        Presented by <em>{ex.organiser}</em>
+      </p>
+    )}
+
+    <dl class="facts" data-reveal="up" style="--d:0.3s">
+      {
+        facts.map(([k, v]) => (
+          <div>
+            <dt class="t-label muted">{k}</dt>
+            <dd class:list={{ muted: v === 'To be confirmed' }}>{v}</dd>
+          </div>
+        ))
+      }
+      <div>
+        <dt class="t-label muted">Status</dt>
+        <dd>
+          {st.label}
+          {ex.statusNote && <span class="facts__note">{ex.statusNote}</span>}
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="section--tight ex-intro">
+    <div class="wrap grid">
+      <p class="t-label muted ex-intro__label" data-reveal="fade">Introduction</p>
+      <div class="ex-intro__text">
+        <p class="t-lead" data-reveal="up">{ex.introduction[0]}</p>
+        {ex.introduction.length > 1 && (
+          <div class="t-body" data-reveal="up" style="--d:0.1s">
+            {ex.introduction.slice(1).map((p) => <p>{p}</p>)}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  {
+    art && (
+      <section class="section ex-work surface-white" aria-labelledby="work-title">
+        <div class="wrap grid ex-work__grid">
+          <a href={`/work/${art.slug}`} class="ex-work__media" data-reveal="mask">
+            <div class="media-inner">
+              <ArtImage
+                image={artImg}
+                alt={art.alt}
+                label={fullTitle(art)}
+                kicker="Artwork image — placeholder"
+                note="Original artwork file to be supplied"
+                ratio={art.placeholderRatio}
+                sizes="(max-width: 860px) 100vw, 40vw"
+              />
+            </div>
+          </a>
+          <div class="ex-work__text">
+            <p class="t-label muted">{st.key === 'exhibited' ? 'Work exhibited' : st.key === 'selected' ? 'Selected work' : 'Work on show'}</p>
+            <h2 class="t-heading" id="work-title">
+              {art.title}
+              {art.translation && <em class="ex-work__tr">({art.translation})</em>}
+            </h2>
+            <p class="t-meta">
+              {art.year} · {art.medium}
+            </p>
+            <p class="t-body">{art.summary}</p>
+            <ArrowLink href={`/work/${art.slug}`}>View the artwork</ArrowLink>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section ex-docs" aria-labelledby="docs-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <h2 class="t-label" id="docs-title">Installation photographs</h2>
+        </div>
+        <div class="s-head__main">
+          <p class="t-meta">
+            {photos.length ? `${photos.length} photograph${photos.length > 1 ? 's' : ''}` : 'Documentation will be added once available.'}
+          </p>
+        </div>
+      </div>
+      <div class="docs">
+        {
+          photos.length
+            ? photos.map((p, i) => (
+                <figure class="docs__item" data-reveal="mask" style={`--d:${(i % 2) * 0.1}s`}>
+                  <div class="media-inner">
+                    <ArtImage image={p} alt={`${ex.title}: installation photograph ${i + 1}`} label="" sizes="(max-width: 760px) 100vw, 50vw" />
+                  </div>
+                </figure>
+              ))
+            : [0, 1].map((i) => (
+                <figure class="docs__item" data-reveal="mask" style={`--d:${i * 0.1}s`}>
+                  <div class="media-inner">
+                    <Placeholder
+                      ratio={i ? 4 / 5 : 3 / 2}
+                      kicker="Photograph — placeholder"
+                      label={i ? 'The work in the space' : 'Installation view'}
+                      note="Exhibition documentation to be supplied"
+                    />
+                  </div>
+                </figure>
+              ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight ex-more">
+    <div class="wrap grid">
+      {
+        ex.venue && (
+          <div class="ex-more__col" data-reveal="up">
+            <p class="t-label muted">Venue</p>
+            <p class="t-title">{ex.venue}</p>
+            <p class="t-meta">{location}</p>
+            {mapUrl && <ArrowLink href={mapUrl} external>Open in Maps</ArrowLink>}
+          </div>
+        )
+      }
+      {
+        ex.participatingArtists.length > 0 && (
+          <div class="ex-more__col" data-reveal="up">
+            <p class="t-label muted">Participating artists</p>
+            <ul class="artists">{ex.participatingArtists.map((n) => <li>{n}</li>)}</ul>
+          </div>
+        )
+      }
+      {
+        ex.artistNotes.length > 0 && (
+          <div class="ex-more__col ex-more__col--wide" data-reveal="up">
+            <p class="t-label muted">Notes from the artist</p>
+            <div class="t-lead">{ex.artistNotes.map((p) => <p>{p}</p>)}</div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <nav class="section others" aria-labelledby="others-title">
+    <div class="wrap">
+      <h2 class="t-label" id="others-title">More exhibitions</h2>
+      <ul class="others__list">
+        {
+          others.map((o) => {
+            const s = exhibitionStatus(o);
+            return (
+              <li>
+                <a href={`/exhibitions/${o.slug}`} class="others__row">
+                  <span class="others__title">{o.title}</span>
+                  <span class="t-meta">{[o.venue, o.city].filter(Boolean).join(', ') || o.statusNote}</span>
+                  <span class="t-meta">{formatDateRange(o)}</span>
+                  <span class={`status status--${s.key}`}>{s.label}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </nav>
+</Base>
+
+<style>
+  .ex-hero__title {
+    font-size: clamp(48px, 9vw, 168px);
+  }
+  .ex-hero__org {
+    margin-top: clamp(20px, 2.4vw, 36px);
+  }
+  .ex-hero__org em {
+    font-style: italic;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px var(--col-gap);
+    margin-top: clamp(48px, 6vw, 96px);
+    border-top: 1px solid var(--line-strong);
+    padding-top: 20px;
+  }
+  .facts dd {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-size: clamp(19px, 1.5vw, 24px);
+    line-height: 1.2;
+  }
+  .facts__note {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-55);
+  }
+  @media (max-width: 960px) {
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .ex-intro .grid {
+    row-gap: 20px;
+  }
+  .ex-intro__label {
+    grid-column: 1 / span 4;
+    padding-top: 0.6em;
+  }
+  .ex-intro__text {
+    grid-column: 5 / -1;
+    display: grid;
+    gap: 28px;
+  }
+  @media (max-width: 760px) {
+    .ex-intro__label,
+    .ex-intro__text {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .ex-work__grid {
+    align-items: center;
+    row-gap: 40px;
+  }
+  .ex-work__media {
+    grid-column: 2 / span 4;
+    display: block;
+    overflow: hidden;
+  }
+  .ex-work__media .media-inner {
+    transition: transform 1.2s var(--ease-out);
+  }
+  .ex-work__text {
+    grid-column: 7 / span 5;
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .ex-work__tr {
+    display: block;
+    font-size: 0.5em;
+    color: var(--ink-55);
+    margin-top: 0.2em;
+  }
+  @media (max-width: 860px) {
+    .ex-work__media,
+    .ex-work__text {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .docs {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: clamp(16px, 2.4vw, 40px);
+    align-items: start;
+  }
+  .docs__item {
+    overflow: hidden;
+  }
+  .docs__item:nth-child(even) {
+    margin-top: clamp(40px, 8vw, 140px);
+  }
+  @media (max-width: 760px) {
+    .docs {
+      grid-template-columns: 1fr;
+    }
+    .docs__item:nth-child(even) {
+      margin-top: 0;
+    }
+  }
+
+  .ex-more .grid {
+    row-gap: 48px;
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .ex-more__col {
+    grid-column: span 4;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    justify-items: start;
+  }
+  .ex-more__col--wide {
+    grid-column: span 8;
+  }
+  @media (max-width: 760px) {
+    .ex-more__col,
+    .ex-more__col--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .others__list {
+    margin-top: 28px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .others__row {
+    display: grid;
+    grid-template-columns: 1.6fr 1.4fr 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.5s var(--ease-out);
+  }
+  .others__row:hover {
+    padding-left: 10px;
+  }
+  .others__title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 2vw, 30px);
+    line-height: 1.1;
+  }
+  @media (max-width: 760px) {
+    .others__title {
+      grid-column: 1 / -1;
+    }
+    .others__row {
+      grid-template-columns: 1fr auto;
+      gap: 6px 16px;
+    }
+  }
+</style>

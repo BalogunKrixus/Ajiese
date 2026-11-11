@@ -1,0 +1,96 @@
+---
+import '@fontsource/cormorant-garamond/300.css';
+import '@fontsource/cormorant-garamond/300-italic.css';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: ImageMetadata;
+  ogImageAlt?: string;
+  type?: 'website' | 'article' | 'profile';
+  jsonLd?: object | object[];
+  noindex?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description = site.defaultDescription,
+  ogImage,
+  ogImageAlt,
+  type = 'website',
+  jsonLd,
+  noindex = false,
+  bodyClass,
+} = Astro.props;
+
+const fullTitle = title ? `${title} — Ajiese` : `Ajiese — ${site.descriptor}`;
+const pathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+const canonical = new URL(pathname, Astro.site).href;
+
+let ogUrl = new URL('/og.jpg', Astro.site).href;
+let ogAlt = ogImageAlt ?? 'AJIESE — Contemporary digital portraiture and collage';
+if (ogImage) {
+  const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
+  ogUrl = new URL(og.src, Astro.site).href;
+}
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="author" content={site.legalName} />
+    <meta name="theme-color" content="#F5F2EC" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Ajiese" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta property="og:locale" content="en_GB" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <noscript><style>[data-reveal] { opacity: 1 !important; transform: none !important; clip-path: none !important; }</style></noscript>
+  </head>
+  <body class={bodyClass} id="top">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Nav />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

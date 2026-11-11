@@ -1,0 +1,61 @@
+---
+/**
+ * Shows a supplied image (responsive AVIF/WebP, original proportions, never cropped)
+ * or — when the file has not been supplied yet — a clearly labelled placeholder.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+
+interface Props {
+  image?: ImageMetadata;
+  alt: string;
+  /** Placeholder copy */
+  label: string;
+  kicker?: string;
+  note?: string;
+  /** width / height for the placeholder */
+  ratio?: number;
+  sizes: string;
+  eager?: boolean;
+  /** view-transition-name for shared-element transitions */
+  vt?: string;
+  class?: string;
+  compact?: boolean;
+}
+
+const { image, alt, label, kicker, note, ratio = 3 / 4, sizes, eager = false, vt, class: cls, compact } = Astro.props;
+const candidate = [480, 720, 960, 1280, 1600, 2000, 2400];
+const widths = image ? [...candidate.filter((w) => w < image.width), image.width] : [];
+const style = vt ? `view-transition-name:${vt}` : undefined;
+---
+
+{
+  image ? (
+    <Picture
+      src={image}
+      alt={alt}
+      formats={['avif', 'webp']}
+      widths={widths}
+      sizes={sizes}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+      decoding="async"
+      class:list={['art-img', cls]}
+      pictureAttributes={{ class: 'art-picture', style }}
+    />
+  ) : (
+    <Placeholder label={label} kicker={kicker} note={note} ratio={ratio} class={cls} style={style} compact={compact} />
+  )
+}
+
+<style>
+  .art-picture {
+    display: block;
+    width: 100%;
+  }
+  .art-img {
+    width: 100%;
+    height: auto;
+  }
+</style>

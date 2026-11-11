@@ -1,0 +1,30 @@
+---
+interface Props {
+  label: string;
+  kicker?: string;
+  note?: string;
+  ratio?: number;
+  class?: string;
+  style?: string;
+  compact?: boolean;
+}
+const { label, kicker = 'Placeholder', note = 'Original file to be supplied', ratio = 3 / 4, class: cls, style, compact } = Astro.props;
+---
+
+<div
+  class:list={['ph', cls, { 'ph--compact': compact }]}
+  style={`aspect-ratio:${ratio};${style ?? ''}`}
+  role="img"
+  aria-label={`${kicker}: ${label}. ${note}.`}
+  data-placeholder
+>
+  <svg class="ph__x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" stroke-width="0.6" vector-effect="non-scaling-stroke"></line>
+    <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" stroke-width="0.6" vector-effect="non-scaling-stroke"></line>
+  </svg>
+  <div class="ph__label" aria-hidden="true">
+    <span class="ph__kicker">{kicker}</span>
+    <span class="ph__title">{label}</span>
+    <span class="ph__note">{note}</span>
+  </div>
+</div>

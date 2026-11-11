@@ -1,0 +1,420 @@
+---
+import Base from '../layouts/Base.astro';
+import ArtImage from '../components/ArtImage.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import Lines from '../components/Lines.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { pressFeatures, pressKit } from '../data/press';
+import { exhibitions } from '../data/exhibitions';
+import { fullTitle, getArtwork } from '../data/artworks';
+import { site } from '../data/site';
+import { exhibitionImages, pressImage } from '../lib/images';
+import { exhibitionStatus, formatDate, formatDateRange } from '../lib/format';
+
+const features = [...pressFeatures].sort((a, b) => b.date.localeCompare(a.date));
+const samples = [
+  { ratio: 4 / 5, label: 'Feature or interview' },
+  { ratio: 1, label: 'Publication or catalogue' },
+  { ratio: 4 / 5, label: 'Conversation or podcast' },
+];
+// Exhibition documentation: confirmed exhibitions only (never the unconfirmed selection)
+const documented = exhibitions.filter((e) => e.status !== 'selected');
+---
+
+<Base
+  title="Press & Media"
+  description="Press and media resources for Ajiese (Christopher Balogun): features, exhibition documentation, press kit and press enquiries."
+>
+  <section class="page-hero wrap">
+    <div class="page-hero__top" data-reveal="fade">
+      <p class="t-label">Press</p>
+      <a href={`mailto:${site.email}?subject=${encodeURIComponent('Press enquiry')}`} class="t-label link-underline">Press enquiries ↗</a>
+    </div>
+    <Lines as="h1" class="t-display" lines={['Press &amp;', '<em>media</em>']} />
+    <p class="t-lead page-hero__lead" data-reveal="up" style="--d:0.3s">
+      Selected features, publications, conversations and media resources relating to the work and practice of Ajiese.
+    </p>
+  </section>
+
+  <!-- Features -->
+  <section class="section--tight features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <span class="index">01</span>
+          <h2 class="t-label" id="features-title">Media &amp; features</h2>
+        </div>
+        <div class="s-head__main">
+          {
+            features.length === 0 && (
+              <p class="notice" data-reveal="up">
+                <span class="notice__tag">Layout preview</span>
+                There is no published press coverage to list yet. The entries below are labelled samples showing how
+                future features will appear.
+              </p>
+            )
+          }
+        </div>
+      </div>
+
+      <ul class="features__grid">
+        {
+          features.length
+            ? features.map((f, i) => (
+                <li data-reveal="up" style={`--d:${(i % 3) * 0.08}s`}>
+                  <a href={f.url} target="_blank" rel="noopener noreferrer" class="feature">
+                    <div class="feature__media">
+                      <ArtImage image={pressImage(f.id)} alt={`${f.publication}: ${f.title}`} label={f.publication} kicker="Thumbnail" ratio={4 / 5} sizes="(max-width: 760px) 100vw, 33vw" compact />
+                    </div>
+                    <p class="t-label feature__pub">{f.publication}</p>
+                    <h3 class="t-title">{f.title}</h3>
+                    <p class="t-meta">{formatDate(f.date)}</p>
+                    <p class="feature__desc">{f.description}</p>
+                    <span class="feature__more">
+                      Read the feature <span aria-hidden="true">↗</span>
+                      <span class="sr-only">(opens in a new tab)</span>
+                    </span>
+                  </a>
+                </li>
+              ))
+            : samples.map((s, i) => (
+                <li class="feature feature--sample" data-reveal="up" style={`--d:${i * 0.08}s`} aria-label={`Sample layout ${i + 1} — not real coverage`}>
+                  <div class="feature__media">
+                    <Placeholder ratio={s.ratio} kicker="Sample — not real coverage" label={s.label} note="Cover image or thumbnail" compact />
+                  </div>
+                  <p class="t-label feature__pub">Publication name</p>
+                  <h3 class="t-title">Article or feature title</h3>
+                  <p class="t-meta">Publication date</p>
+                  <p class="feature__desc">A short description of the feature and how it relates to the work.</p>
+                  <span class="feature__more">External link ↗</span>
+                </li>
+              ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Exhibition documentation -->
+  <section class="section docs surface-white" aria-labelledby="docs-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <span class="index">02</span>
+          <h2 class="t-label" id="docs-title">Exhibition documentation</h2>
+        </div>
+        <div class="s-head__main">
+          <p class="t-body">Installation photographs and event documentation from exhibitions, added as they become available.</p>
+        </div>
+      </div>
+      <ul class="docs__grid">
+        {
+          documented.map((ex, i) => {
+            const photo = exhibitionImages(ex.slug)[0];
+            const art = getArtwork(ex.artwork);
+            const st = exhibitionStatus(ex);
+            return (
+              <li data-reveal="up" style={`--d:${i * 0.08}s`}>
+                <a href={`/exhibitions/${ex.slug}`} class="doc">
+                  <div class="doc__media">
+                    <ArtImage
+                      image={photo}
+                      alt={`${ex.title}: installation photograph`}
+                      label={ex.title}
+                      kicker="Photograph — placeholder"
+                      note="Installation photographs to be supplied"
+                      ratio={3 / 2}
+                      sizes="(max-width: 760px) 100vw, 33vw"
+                      compact
+                    />
+                  </div>
+                  <div class="doc__meta">
+                    <span class={`status status--${st.key}`}>{st.label}</span>
+                    <span class="t-meta">{formatDateRange(ex)}</span>
+                  </div>
+                  <h3 class="t-title">{ex.title}</h3>
+                  <p class="t-meta">
+                    {[ex.organiser !== ex.title ? ex.organiser : null, ex.venue].filter(Boolean).join(' · ')}
+                    {art && <><br /><em class="doc__work">{fullTitle(art)}</em></>}
+                  </p>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Press kit -->
+  <section class="section kit" aria-labelledby="kit-title">
+    <div class="wrap">
+      <div class="s-head">
+        <div class="s-head__label">
+          <span class="index">03</span>
+          <h2 class="t-label" id="kit-title">Press kit</h2>
+        </div>
+        <div class="s-head__main">
+          <p class="t-body">
+            Materials for editors, curators and organisations. Files that are still in preparation can be requested by
+            email.
+          </p>
+        </div>
+      </div>
+      <ul class="kit__grid">
+        {
+          pressKit.map((k, i) => (
+            <li data-reveal="up" style={`--d:${(i % 3) * 0.06}s`}>
+              {k.file ? (
+                <a href={k.file} download class="kit-card">
+                  <span class="index">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="t-title kit-card__title">{k.title}</span>
+                  <span class="t-meta">{k.description}</span>
+                  <span class="kit-card__foot">
+                    <span class="t-label">{k.format}</span>
+                    <span class="t-label">Download ↓</span>
+                  </span>
+                </a>
+              ) : (
+                <div class="kit-card kit-card--pending" aria-disabled="true">
+                  <span class="index">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="t-title kit-card__title">{k.title}</span>
+                  <span class="t-meta">{k.description}</span>
+                  <span class="kit-card__foot">
+                    <span class="t-label">{k.format}</span>
+                    <span class="t-label kit-card__state">In preparation</span>
+                  </span>
+                </div>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Enquiries -->
+  <section class="section enquiries surface-dark" aria-labelledby="enq-title">
+    <div class="wrap grid">
+      <p class="t-label muted enquiries__label">Press enquiries</p>
+      <div class="enquiries__body">
+        <Lines id="enq-title" class="t-heading" lines={['Write to the', '<em>studio.</em>']} />
+        <p class="t-lead" data-reveal="up" style="--d:0.2s">
+          Journalists, editors, curators and organisations interested in featuring the artist or his work are welcome to
+          get in touch.
+        </p>
+        <div class="enquiries__links" data-reveal="up" style="--d:0.3s">
+          <a class="enquiries__email" href={`mailto:${site.email}?subject=${encodeURIComponent('Press enquiry')}`}>{site.email}</a>
+          <ArrowLink href="/contact?subject=Press%20enquiry">Use the contact form</ArrowLink>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notice {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--ink-70);
+    max-width: 40em;
+  }
+  .notice__tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    border: 1px solid currentColor;
+    padding: 4px 8px;
+  }
+
+  .features__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 3vw, 48px);
+    align-items: start;
+    padding-bottom: clamp(40px, 6vw, 80px);
+  }
+  .features__grid > li:nth-child(3n + 2) {
+    margin-top: clamp(32px, 6vw, 96px);
+  }
+  .feature {
+    display: grid;
+    gap: 10px;
+  }
+  .feature__media {
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .feature--sample {
+    opacity: 0.78;
+  }
+  .feature--sample .t-title,
+  .feature--sample .feature__pub {
+    color: var(--ink-55);
+  }
+  .feature__pub {
+    color: var(--rust);
+  }
+  .feature__desc {
+    font-size: 14px;
+    color: var(--ink-70);
+  }
+  .feature__more {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  @media (max-width: 860px) {
+    .features__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .features__grid > li:nth-child(3n + 2) {
+      margin-top: 48px;
+    }
+  }
+  @media (max-width: 560px) {
+    .features__grid {
+      grid-template-columns: 1fr;
+    }
+    .features__grid > li:nth-child(3n + 2) {
+      margin-top: 0;
+    }
+  }
+
+  .docs__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 3vw, 48px);
+  }
+  .doc {
+    display: grid;
+    gap: 12px;
+  }
+  .doc__media {
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .doc__media :global(.ph),
+  .doc__media :global(img) {
+    transition: transform 1.2s var(--ease-out);
+  }
+  .doc:hover .doc__media :global(.ph),
+  .doc:hover .doc__media :global(img) {
+    transform: scale(1.04);
+  }
+  .doc__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .doc__work {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--ink);
+  }
+  @media (max-width: 860px) {
+    .docs__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kit__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line);
+  }
+  .kit__grid > li {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .kit-card {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 12px;
+    min-height: 260px;
+    height: 100%;
+    padding: clamp(20px, 2vw, 32px);
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+  a.kit-card:hover {
+    background: var(--ink);
+    color: var(--ivory);
+  }
+  .kit-card__title {
+    margin-top: 12px;
+  }
+  .kit-card__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    padding-top: 20px;
+  }
+  .kit-card--pending {
+    background: repeating-linear-gradient(-45deg, transparent 0 10px, rgb(216 199 172 / 0.18) 10px 11px);
+  }
+  .kit-card--pending .kit-card__title {
+    color: var(--ink-70);
+  }
+  .kit-card__state {
+    color: var(--ink-55);
+  }
+  @media (max-width: 860px) {
+    .kit__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .kit__grid {
+      grid-template-columns: 1fr;
+    }
+    .kit-card {
+      min-height: 200px;
+    }
+  }
+
+  .enquiries .grid {
+    row-gap: 24px;
+  }
+  .enquiries__label {
+    grid-column: 1 / span 3;
+    padding-top: 1em;
+  }
+  .enquiries__body {
+    grid-column: 4 / -1;
+    display: grid;
+    gap: clamp(28px, 3vw, 44px);
+  }
+  .enquiries__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 48px;
+  }
+  .enquiries__email {
+    font-family: var(--serif);
+    font-size: clamp(24px, 3vw, 48px);
+    line-height: 1.1;
+    border-bottom: 1px solid var(--line-strong);
+    transition: border-color 0.4s ease;
+    word-break: break-word;
+  }
+  .enquiries__email:hover {
+    border-color: currentColor;
+  }
+  @media (max-width: 760px) {
+    .enquiries__label,
+    .enquiries__body {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

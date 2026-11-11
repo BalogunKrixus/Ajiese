@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import Lines from '../components/Lines.astro';
+---
+
+<Base title="Page not found" noindex>
+  <section class="page-hero wrap nf">
+    <div class="page-hero__top"><p class="t-label">404</p></div>
+    <Lines as="h1" class="t-display" lines={['This page', 'is <em>not here.</em>']} />
+    <div class="nf__links">
+      <ArrowLink href="/">Return home</ArrowLink>
+      <ArrowLink href="/work">View the works</ArrowLink>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 80svh;
+  }
+  .nf__links {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 56px;
+  }
+</style>

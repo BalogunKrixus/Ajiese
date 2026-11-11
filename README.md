@@ -49,7 +49,7 @@ Set `SITE_URL` to the final domain so canonical links, the sitemap and Open Grap
 
 ## Design system
 
-- **Palette:** warm ivory `#F5F2EC`, soft white `#FAF9F6`, charcoal `#171717`, with muted olive, warm rust and sand used sparingly.
+- **Palette:** white `#FFFFFF` page background, charcoal `#171717`, with muted olive, warm rust and sand used sparingly.
 - **Type:** Cormorant Garamond (display serif and italics) with Inter (interface and body). Both are self-hosted, and both were checked to render the Yoruba characters in ẸWÀ and ÀṢẸ.
 - **Motion:** masked letter reveal in the hero, line-by-line heading reveals, clip-path image reveals on scroll, cross-document page transitions with shared artwork transitions (Chromium and Safari 18.2+; other browsers navigate normally). Everything respects `prefers-reduced-motion`, and the site works fully without JavaScript.
 - **Tokens and shared styles:** `src/styles/global.css`

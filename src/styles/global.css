@@ -6,6 +6,7 @@
   /* Palette (from the brief) */
   --ivory: #f5f2ec;
   --white: #faf9f6;
+  --paper: #ffffff; /* page background */
   --ink: #171717;
   --olive: #596653;
   --rust: #a75d43;
@@ -16,7 +17,7 @@
   --line: rgb(23 23 23 / 0.14);
   --line-strong: rgb(23 23 23 / 0.32);
 
-  --bg: var(--ivory);
+  --bg: var(--paper);
   --fg: var(--ink);
 
   /* Type */
@@ -161,8 +162,8 @@ select {
 }
 
 .surface-white {
-  --bg: var(--white);
-  background: var(--white);
+  --bg: var(--paper);
+  background: var(--paper);
 }
 .surface-dark {
   --bg: var(--ink);

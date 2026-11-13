@@ -1,7 +1,6 @@
 ---
-import { getImage } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import ArtImage from '../components/ArtImage.astro';
 import ArrowLink from '../components/ArrowLink.astro';
 import Lines from '../components/Lines.astro';
 import Placeholder from '../components/Placeholder.astro';
@@ -38,30 +37,51 @@ const meta = (p: { year?: number; location?: string }) => [p.location, p.year].f
     {
       shown.length > 0 ? (
         <ul class="photos__grid">
-          {shown.map((p, i) => (
-            <li class="photo" data-reveal="up" style={`--d:${(i % 2) * 0.08}s`}>
-              <button
-                type="button"
-                class="photo__open"
-                data-lightbox-open={i}
-                data-full={p.full}
-                data-alt={p.alt}
-                data-title={p.title}
-                data-meta={meta(p)}
-                data-caption={p.caption ?? ''}
-                aria-label={`View ${p.title} full screen`}
-              >
-                <span class="photo__media">
-                  <ArtImage image={p.image} alt={p.alt} label={p.title} sizes="(max-width: 760px) 100vw, 50vw" />
-                </span>
-              </button>
-              <div class="photo__meta">
-                <h2 class="photo__title">{p.title}</h2>
-                {meta(p) && <p class="t-meta">{meta(p)}</p>}
-                {p.caption && <p class="photo__caption">{p.caption}</p>}
-              </div>
-            </li>
-          ))}
+          {shown.map((p, i) => {
+            const img = p.image!;
+            const ratio = p.frame?.ratio ?? img.width / img.height;
+            const pos = `${p.frame?.x ?? 50}% ${p.frame?.y ?? 50}%`;
+            return (
+              <li class="photo">
+                <button
+                  type="button"
+                  class="photo__open"
+                  data-lightbox-open={i}
+                  data-full={p.full}
+                  data-alt={p.alt}
+                  data-title={p.title}
+                  data-meta={meta(p)}
+                  data-caption={p.caption ?? ''}
+                  aria-label={`View ${p.title} full screen`}
+                >
+                  <span class="photo__frame" data-reveal="mask" style={`--d:${(i % 2) * 0.1}s;aspect-ratio:${ratio}`}>
+                    <span class="media-inner photo__zoom">
+                      <Picture
+                        src={img}
+                        alt={p.alt}
+                        formats={['avif', 'webp']}
+                        fallbackFormat="jpg"
+                        widths={[480, 800, 1200, 1600, img.width].filter((w, k, a) => w <= img.width && a.indexOf(w) === k)}
+                        sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 45vw"
+                        loading={i < 2 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        style={`object-position:${pos}`}
+                      />
+                    </span>
+                  </span>
+                </button>
+                <div class="photo__meta" data-reveal="up" style={`--d:${(i % 2) * 0.1 + 0.15}s`}>
+                  <span class="index">{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h2 class="photo__title">{p.title}</h2>
+                    {meta(p) && <p class="t-meta">{meta(p)}</p>}
+                    {p.caption && <p class="photo__caption">{p.caption}</p>}
+                  </div>
+                  <span class="photo__cta" aria-hidden="true">View</span>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <>
@@ -184,16 +204,33 @@ const meta = (p: { year?: number; location?: string }) => [p.location, p.year].f
     padding: 4px 8px;
   }
 
-  /* Two-column masonry: photographs keep their own proportions */
+  /* Editorial grid, same rhythm as the homepage works: varied widths and offsets.
+     Frames crop each photograph around its subject; the full view shows it whole. */
   .photos__grid {
-    columns: 2;
-    column-gap: clamp(24px, 4vw, 72px);
-  }
-  .photo {
-    break-inside: avoid;
-    margin-bottom: clamp(48px, 6vw, 104px);
     display: grid;
-    gap: 16px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    row-gap: clamp(72px, 9vw, 160px);
+    align-items: start;
+    padding-bottom: clamp(72px, 9vw, 140px);
+  }
+  .photo:nth-child(5n + 1) {
+    grid-column: 1 / span 5;
+  }
+  .photo:nth-child(5n + 2) {
+    grid-column: 7 / span 6;
+    margin-top: clamp(80px, 14vw, 260px);
+  }
+  .photo:nth-child(5n + 3) {
+    grid-column: 2 / span 4;
+    margin-top: clamp(-140px, -5vw, 0px);
+  }
+  .photo:nth-child(5n + 4) {
+    grid-column: 8 / span 5;
+    margin-top: clamp(40px, 10vw, 180px);
+  }
+  .photo:nth-child(5n + 5) {
+    grid-column: 4 / span 6;
   }
   .photo__open {
     display: block;
@@ -202,36 +239,85 @@ const meta = (p: { year?: number; location?: string }) => [p.location, p.year].f
     border: 0;
     background: none;
     cursor: zoom-in;
+    text-align: left;
   }
-  .photo__media {
+  .photo__frame {
     display: block;
+    position: relative;
     overflow: hidden;
+    background: var(--white);
   }
-  .photo__media :global(img) {
+  .photo__zoom {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .photo__zoom :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 1.4s var(--ease-out);
   }
-  .photo__open:hover .photo__media :global(img) {
-    transform: scale(1.03);
+  .photo__open:hover .photo__zoom :global(img) {
+    transform: scale(1.035);
   }
   .photo__meta {
     display: grid;
-    gap: 4px;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 18px;
+    padding-top: 18px;
   }
   .photo__title {
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(22px, 1.8vw, 28px);
-    line-height: 1.15;
+    font-size: clamp(22px, 2vw, 32px);
+    line-height: 1.1;
   }
   .photo__caption {
     font-size: 14px;
     color: var(--ink-70);
     max-width: 36em;
-    margin-top: 4px;
+    margin-top: 6px;
   }
-  @media (max-width: 760px) {
-    .photos__grid {
-      columns: 1;
+  .photo__cta {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.6s var(--ease-out);
+  }
+  .photo:hover .photo__cta {
+    opacity: 1;
+    transform: none;
+  }
+  @media (hover: none) {
+    .photo__cta {
+      display: none;
+    }
+  }
+  @media (max-width: 960px) {
+    .photo:nth-child(odd) {
+      grid-column: 1 / span 6;
+      margin-top: 0;
+    }
+    .photo:nth-child(even) {
+      grid-column: 7 / span 6;
+      margin-top: clamp(48px, 12vw, 120px);
+    }
+    /* a photo left alone on the last row is centred */
+    .photo:nth-child(odd):last-child {
+      grid-column: 4 / span 6;
+    }
+  }
+  @media (max-width: 600px) {
+    .photos__grid > .photo {
+      grid-column: 1 / -1;
+      margin-top: 0;
     }
   }
 

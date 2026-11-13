@@ -11,6 +11,7 @@ import { exhibitions } from '../../data/exhibitions';
 import { artworkImage } from '../../lib/images';
 import { exhibitionStatus, formatDateRange } from '../../lib/format';
 import { artworkSchema } from '../../lib/schema';
+import { clip } from '../../lib/text';
 
 export const getStaticPaths = (() =>
   artworks.map((a) => ({ params: { slug: a.slug }, props: { artwork: a } }))) satisfies GetStaticPaths;
@@ -42,8 +43,9 @@ const meta: [string, string][] = [
 ---
 
 <Base
-  title={fullTitle(a)}
-  description={`${fullTitle(a)} (${a.year}) by Ajiese. ${a.summary}`}
+  title={`${fullTitle(a)}, ${a.year}`}
+  description={clip(`${fullTitle(a)} (${a.year}) by Christopher Balogun (Ajiese). ${a.medium}${a.dimensions ? `, ${a.dimensions}` : ''}. ${a.summary}`)}
+  breadcrumbs={[{ name: 'Works', path: '/work' }, { name: fullTitle(a), path: `/work/${a.slug}` }]}
   ogImage={image}
   ogImageAlt={a.alt}
   type="article"
@@ -76,7 +78,7 @@ const meta: [string, string][] = [
               image={image}
               alt={a.alt}
               label={fullTitle(a)}
-              kicker="Artwork image — placeholder"
+              kicker="Artwork image placeholder"
               note="Original high-resolution artwork file to be supplied by the artist"
               ratio={a.placeholderRatio}
               sizes="(max-width: 760px) 100vw, 60vw"

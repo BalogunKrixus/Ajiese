@@ -13,7 +13,7 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
 
 <Base
   title="Exhibitions"
-  description="Exhibitions and selections for Ajiese, including RESONANCE (OYEZ Arts), Elephant Vision Lab (Hit & Run) and Sartori Exhibitions in 2026."
+  description="Exhibitions by Christopher Balogun (Ajiese), including RESONANCE (OYEZ Arts), Elephant Vision Lab (Hit & Run) and Sartori Exhibitions in London, 2026."
 >
   <section class="page-hero wrap">
     <div class="page-hero__top" data-reveal="fade">
@@ -54,7 +54,7 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
                               image={art ? artworkImage(art.slug) : undefined}
                               alt={art ? art.alt : ''}
                               label={art ? fullTitle(art) : ex.title}
-                              kicker="Artwork image — placeholder"
+                              kicker="Artwork image placeholder"
                               note="Installation photographs to follow"
                               ratio={art?.placeholderRatio ?? 3 / 4}
                               sizes="(max-width: 760px) 100vw, 25vw"

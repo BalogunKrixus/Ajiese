@@ -10,7 +10,7 @@ import { exhibitions } from '../data/exhibitions';
 import { site } from '../data/site';
 import { artistPortrait, artworkImage } from '../lib/images';
 import { letters, sortExhibitions } from '../lib/format';
-import { personSchema, websiteSchema } from '../lib/schema';
+import { collectionSchema } from '../lib/schema';
 
 const heroWork = artworks[0];
 const heroImage = artworkImage(heroWork.slug);
@@ -20,9 +20,11 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
 ---
 
 <Base
+  fullTitle="Ajiese (Christopher Balogun) | Contemporary Artist, Leicester"
   description={site.defaultDescription}
   ogImage={heroImage}
-  jsonLd={[websiteSchema(Astro.site!), personSchema(Astro.site!)]}
+  ogImageAlt={heroWork.alt}
+  jsonLd={collectionSchema(artworks, Astro.site!, '/', 'Ajiese (Christopher Balogun): selected works')}
   bodyClass="page-home"
 >
   <!-- ============ HERO ============ -->
@@ -52,7 +54,7 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
                   image={heroImage}
                   alt={heroWork.alt}
                   label={heroWork.title}
-                  kicker="Artwork image — placeholder"
+                  kicker="Artwork image placeholder"
                   note="Original artwork file to be supplied"
                   ratio={heroWork.placeholderRatio}
                   sizes="(max-width: 760px) 70vw, 30vw"
@@ -77,7 +79,7 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
       </div>
 
       <h1 class="hero__word" id="hero-title">
-        <span class="sr-only">Ajiese</span>
+        <span class="sr-only">Ajiese (Christopher Balogun), contemporary artist</span>
         <span class="hero__letters" aria-hidden="true">
           {
             letters(site.wordmark).map((ch, i) => (
@@ -125,7 +127,7 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
             image={portrait}
             alt="Portrait of the artist Christopher Balogun (Ajiese)"
             label="Artist portrait"
-            kicker="Photograph — placeholder"
+            kicker="Photograph placeholder"
             note="Professional portrait of the artist to be supplied"
             ratio={4 / 5}
             sizes="(max-width: 760px) 100vw, 40vw"

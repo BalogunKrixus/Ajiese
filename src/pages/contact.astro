@@ -15,7 +15,7 @@ const details: [string, string, string?][] = [
 
 <Base
   title="Contact"
-  description="Contact Ajiese (Christopher Balogun) about exhibition opportunities, collaborations, artwork enquiries, press features or general conversations."
+  description="Contact Christopher Balogun (Ajiese) about exhibitions, collaborations, commissions, artwork and print enquiries, or press features."
 >
   <section class="page-hero wrap contact-hero">
     <div class="page-hero__top" data-reveal="fade">
@@ -211,7 +211,7 @@ const details: [string, string, string?][] = [
         return;
       }
       if (Date.now() - startedAt < 2500) {
-        status.textContent = 'That was quick — please check your message and send it again.';
+        status.textContent = 'That was quick. Please check your message and send it again.';
         return;
       }
 
@@ -222,7 +222,7 @@ const details: [string, string, string?][] = [
 
       if (!endpoint) {
         // No form service configured: hand over to the visitor's email app.
-        const body = `${message}\n\n— ${name}\n${from}`;
+        const body = `${message}\n\n${name}\n${from}`;
         window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         showSuccess(
           'Almost there.',

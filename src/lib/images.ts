@@ -2,7 +2,7 @@ import type { ImageMetadata } from 'astro';
 
 /**
  * Looks up supplied images by convention, so new files only need to be dropped
- * into src/assets/… — no code changes. Missing images fall back to labelled placeholders.
+ * into src/assets/…, no code changes. Missing images fall back to labelled placeholders.
  */
 const files = import.meta.glob<ImageMetadata>('/src/assets/**/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP}', {
   eager: true,

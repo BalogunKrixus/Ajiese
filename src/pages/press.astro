@@ -23,7 +23,7 @@ const documented = exhibitions.filter((e) => e.status !== 'selected');
 
 <Base
   title="Press & Media"
-  description="Press and media resources for Ajiese (Christopher Balogun): features, exhibition documentation, press kit and press enquiries."
+  description="Press and media resources for Christopher Balogun (Ajiese): biography, press kit, exhibition documentation and press enquiries."
 >
   <section class="page-hero wrap">
     <div class="page-hero__top" data-reveal="fade">
@@ -78,9 +78,9 @@ const documented = exhibitions.filter((e) => e.status !== 'selected');
                 </li>
               ))
             : samples.map((s, i) => (
-                <li class="feature feature--sample" data-reveal="up" style={`--d:${i * 0.08}s`} aria-label={`Sample layout ${i + 1} — not real coverage`}>
+                <li class="feature feature--sample" data-reveal="up" style={`--d:${i * 0.08}s`} aria-label={`Sample layout ${i + 1}, not real coverage`}>
                   <div class="feature__media">
-                    <Placeholder ratio={s.ratio} kicker="Sample — not real coverage" label={s.label} note="Cover image or thumbnail" compact />
+                    <Placeholder ratio={s.ratio} kicker="Sample, not real coverage" label={s.label} note="Cover image or thumbnail" compact />
                   </div>
                   <p class="t-label feature__pub">Publication name</p>
                   <h3 class="t-title">Article or feature title</h3>
@@ -120,7 +120,7 @@ const documented = exhibitions.filter((e) => e.status !== 'selected');
                       image={photo}
                       alt={`${ex.title}: installation photograph`}
                       label={ex.title}
-                      kicker="Photograph — placeholder"
+                      kicker="Photograph placeholder"
                       note="Installation photographs to be supplied"
                       ratio={3 / 2}
                       sizes="(max-width: 760px) 100vw, 33vw"

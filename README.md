@@ -1,4 +1,4 @@
-# AJIESE — artist portfolio website
+# AJIESE: artist portfolio website
 
 The online home of **Ajiese** (Christopher Balogun): contemporary digital portraiture and collage.
 A fast, static site built with [Astro](https://astro.build), no client-side framework, and about 2 kB of JavaScript.
@@ -54,6 +54,27 @@ and `SITE_URL=https://ajiese.site`. Every push to the deployed branch rebuilds t
 3. In **Domain management**, add `ajiese.site`, then add the DNS records Netlify shows at your domain registrar. HTTPS is issued automatically.
 
 Any other static host also works (Cloudflare Pages, Vercel): build `npm run build`, output `dist/`.
+
+## Search engines (SEO)
+
+Built in: a unique title and description on every page that names Christopher Balogun (Ajiese);
+structured data that tells search engines who the artist is (Person, with portrait, Instagram,
+De Montfort University and Leicester), the website, every artwork (VisualArtwork, A2 size),
+every exhibition (ExhibitionEvent), the About page (ProfilePage) and breadcrumbs; a sitemap;
+share previews for social media; descriptive image alt text; and fast loading.
+
+To get found on Google, the owner needs to:
+
+1. Add the site to **Google Search Console** (search.google.com/search-console). Choose a
+   **Domain** property for `ajiese.site` and verify it with the TXT record Google gives you
+   (add it in Namecheap, Advanced DNS, as a TXT Record with Host `@`).
+2. In Search Console, open **Sitemaps** and submit `https://ajiese.site/sitemap-index.xml`.
+3. Use **URL Inspection** on the homepage and click **Request indexing**.
+4. Repeat for **Bing Webmaster Tools** (it can import from Search Console).
+5. Link to `https://ajiese.site` from Instagram and every other profile, and ask exhibition
+   organisers to link to it. Add those profiles to `sameAs` in `src/data/site.ts`.
+
+House style: no em dashes or en dashes anywhere on the site (titles and descriptions included).
 
 ## Design system
 

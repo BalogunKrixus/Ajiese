@@ -6,7 +6,7 @@ import Crop from '../components/Crop.astro';
 import Lines from '../components/Lines.astro';
 import { artworks, fullTitle } from '../data/artworks';
 import { artistPortrait, artworkImage } from '../lib/images';
-import { personSchema } from '../lib/schema';
+import { profilePageSchema } from '../lib/schema';
 
 const portrait = artistPortrait();
 
@@ -41,11 +41,13 @@ const background = [
 ---
 
 <Base
-  title="About"
-  description="About Ajiese (Christopher Balogun): a Leicester-based artist whose digital portraiture and collage explore identity, culture and memory."
+  fullTitle="About Christopher Balogun (Ajiese) | Artist Biography"
+  breadcrumbs={[{ name: 'About', path: '/about' }]}
+  description="Christopher Balogun (Ajiese) is a Leicester-based artist and De Montfort University graduate whose digital portraits explore identity, culture and memory."
   type="profile"
   ogImage={portrait}
-  jsonLd={personSchema(Astro.site!)}
+  ogImageAlt="Portrait of the artist Christopher Balogun (Ajiese)"
+  jsonLd={profilePageSchema(Astro.site!)}
 >
   <!-- Hero -->
   <section class="page-hero wrap about-hero">
@@ -66,7 +68,7 @@ const background = [
             image={portrait}
             alt="Portrait of the artist Christopher Balogun (Ajiese)"
             label="Artist photograph"
-            kicker="Photograph — placeholder"
+            kicker="Photograph placeholder"
             note="Professional photograph of the artist to be supplied"
             ratio={4 / 5}
             sizes="(max-width: 860px) 100vw, 45vw"
@@ -145,7 +147,7 @@ const background = [
             cultural references into contemporary digital art.
           </p>
         </div>
-        <footer class="t-label statement__sig" data-reveal="fade">— Ajiese, artist statement</footer>
+        <footer class="t-label statement__sig" data-reveal="fade">Ajiese, artist statement</footer>
       </blockquote>
     </div>
   </section>
@@ -203,7 +205,7 @@ const background = [
             <li data-reveal="mask" style={`--d:${i * 0.12}s`}>
               <a href={`/work/${a.slug}`} class="approach__detail">
                 <div class="media-inner">
-                  <Crop image={image} crop={crop} alt={`${fullTitle(a)}, close-up: ${crop.caption.toLowerCase()}`} ratio={3 / 4} placeholderLabel={`${fullTitle(a)} — ${crop.caption.toLowerCase()}`} />
+                  <Crop image={image} crop={crop} alt={`${fullTitle(a)}, close-up: ${crop.caption.toLowerCase()}`} ratio={3 / 4} placeholderLabel={`${fullTitle(a)}: ${crop.caption.toLowerCase()}`} />
                 </div>
                 <p class="t-meta approach__cap">
                   <span>Detail</span> <em>{fullTitle(a)}</em>

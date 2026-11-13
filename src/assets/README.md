@@ -1,6 +1,6 @@
 # Image folders
 
-Drop the original files in and rebuild — no code changes needed. Until a file exists,
+Drop the original files in and rebuild, no code changes needed. Until a file exists,
 the site shows a clearly labelled placeholder in its place.
 
 | What | Where | Notes |

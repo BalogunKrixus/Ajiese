@@ -11,7 +11,7 @@
  */
 
 export interface DetailCrop {
-  /** Focal point of the crop, as a percentage of the full artwork (0–100). */
+  /** Focal point of the crop, as a percentage of the full artwork (0 to 100). */
   x: number;
   y: number;
   /** Magnification of the close-up, e.g. 2.5 = 250 %. */
@@ -26,7 +26,7 @@ export interface Artwork {
   translation?: string;
   year: number;
   medium: string;
-  /** Leave null until the dimensions are confirmed — the site will say "To be confirmed". */
+  /** Leave null until the dimensions are confirmed, the site will say "To be confirmed". */
   dimensions: string | null;
   category: string;
   /** Optional style line, e.g. "Geometric digital illustration". */
@@ -34,7 +34,7 @@ export interface Artwork {
   summary: string;
   description: string[];
   themes: string[];
-  /** e.g. "Available — enquire", "Private collection", or null to hide. */
+  /** e.g. "Available, enquire", "Private collection", or null to hide. */
   availability: string | null;
   /** Descriptive alt text for the artwork image. */
   alt: string;

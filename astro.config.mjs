@@ -13,7 +13,7 @@ export default defineConfig({
   build: { format: 'file' },
   integrations: [sitemap()],
   image: {
-    // Artwork is never cropped or recoloured by the pipeline — only resized and re-encoded.
+    // Artwork is never cropped or recoloured by the pipeline, only resized and re-encoded.
     responsiveStyles: false,
   },
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },

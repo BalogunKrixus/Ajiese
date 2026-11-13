@@ -6,46 +6,89 @@ import '@fontsource/cormorant-garamond/400-italic.css';
 import '@fontsource/cormorant-garamond/500.css';
 import '@fontsource-variable/inter';
 import '../styles/global.css';
+// Fonts used above the fold, preloaded so headings render quickly
+import serifLight from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-300-normal.woff2?url';
+import sansLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 
 import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
+import { artistPortrait } from '../lib/images';
+import { breadcrumbSchema, personSchema, websiteSchema } from '../lib/schema';
+
+interface Crumb {
+  name: string;
+  path: string;
+}
 
 interface Props {
+  /** Page name, e.g. "About". The site name is added automatically. */
   title?: string;
+  /** Overrides the whole <title> (used on the homepage). */
+  fullTitle?: string;
   description?: string;
   ogImage?: ImageMetadata;
   ogImageAlt?: string;
   type?: 'website' | 'article' | 'profile';
+  /** Page-specific structured data nodes (no @context needed). */
   jsonLd?: object | object[];
+  /** Breadcrumb trail after "Home". Defaults to the page title. */
+  breadcrumbs?: Crumb[];
   noindex?: boolean;
   bodyClass?: string;
 }
 
 const {
   title,
+  fullTitle: fullTitleProp,
   description = site.defaultDescription,
   ogImage,
   ogImageAlt,
   type = 'website',
   jsonLd,
+  breadcrumbs,
   noindex = false,
   bodyClass,
 } = Astro.props;
 
-const fullTitle = title ? `${title} — Ajiese` : `Ajiese — ${site.descriptor}`;
+const base = Astro.site!;
+const pageTitle = fullTitleProp ?? (title ? `${title} | ${site.seoName}` : `${site.seoName} | Contemporary Digital Portrait Artist`);
 const pathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
-const canonical = new URL(pathname, Astro.site).href;
+const canonical = new URL(pathname, base).href;
+const isHome = pathname === '/';
 
-let ogUrl = new URL('/og.jpg', Astro.site).href;
-let ogAlt = ogImageAlt ?? 'AJIESE — Contemporary digital portraiture and collage';
+// Share image (Open Graph)
+let ogUrl = new URL('/og.jpg', base).href;
+let ogW = 1200;
+let ogH = 630;
 if (ogImage) {
-  const og = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
-  ogUrl = new URL(og.src, Astro.site).href;
+  const og = await getImage({ src: ogImage, width: Math.min(1200, ogImage.width), format: 'jpg' });
+  ogUrl = new URL(og.src, base).href;
+  ogW = Number(og.attributes.width ?? 1200);
+  ogH = Number(og.attributes.height ?? Math.round((ogW * ogImage.height) / ogImage.width));
 }
-const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const ogAlt = ogImageAlt ?? `${site.seoName}, contemporary digital portraiture and collage`;
+
+// Portrait for the artist's structured data
+const portrait = artistPortrait();
+const portraitUrl = portrait
+  ? new URL((await getImage({ src: portrait, width: 800, format: 'jpg' })).src, base).href
+  : undefined;
+
+// Structured data: the artist and website on every page, plus breadcrumbs and page-specific nodes
+const crumbs: Crumb[] = isHome ? [] : [{ name: 'Home', path: '/' }, ...(breadcrumbs ?? [{ name: title ?? '', path: pathname }])];
+const pageNodes = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    websiteSchema(base),
+    personSchema(base, portraitUrl),
+    ...(crumbs.length > 1 ? [breadcrumbSchema(crumbs, base)] : []),
+    ...pageNodes,
+  ],
+};
 ---
 
 <!doctype html>
@@ -53,29 +96,51 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>{fullTitle}</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
-    <meta name="author" content={site.legalName} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
+    <meta name="author" content={`${site.legalName} (Ajiese)`} />
+    <meta name="creator" content={site.legalName} />
     <meta name="theme-color" content="#FFFFFF" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="preload" href={serifLight} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={sansLatin} as="font" type="font/woff2" crossorigin />
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {site.sameAs.map((u) => <link rel="me" href={u} />)}
 
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content="Ajiese" />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:site_name" content="Ajiese (Christopher Balogun)" />
+    <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content={String(ogW)} />
+    <meta property="og:image:height" content={String(ogH)} />
     <meta property="og:image:alt" content={ogAlt} />
     <meta property="og:locale" content="en_GB" />
+    {
+      type === 'profile' && (
+        <>
+          <meta property="profile:first_name" content="Christopher" />
+          <meta property="profile:last_name" content="Balogun" />
+          <meta property="profile:username" content="ajiese_" />
+        </>
+      )
+    }
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={ogAlt} />
 
-    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
 
     <script is:inline>
       document.documentElement.classList.add('js');

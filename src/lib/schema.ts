@@ -1,55 +1,140 @@
+/**
+ * Structured data (schema.org JSON-LD). This is what lets search engines understand
+ * that Ajiese and Christopher Balogun are the same person, which works are his,
+ * and where he has exhibited.
+ */
 import { site } from '../data/site';
 import type { Artwork } from '../data/artworks';
 import type { Exhibition } from '../data/exhibitions';
 import { fullTitle, getArtwork } from '../data/artworks';
 
-export const personSchema = (base: URL) => ({
-  '@context': 'https://schema.org',
+const abs = (path: string, base: URL) => new URL(path, base).href;
+export const artistId = (base: URL) => abs('/#artist', base);
+export const websiteId = (base: URL) => abs('/#website', base);
+
+const artistRef = (base: URL) => ({ '@id': artistId(base) });
+
+/** The artist. `image` is the absolute URL of the portrait, if available. */
+export const personSchema = (base: URL, image?: string) => ({
   '@type': 'Person',
-  '@id': new URL('/#artist', base).href,
+  '@id': artistId(base),
   name: site.legalName,
-  alternateName: site.name,
+  givenName: 'Christopher',
+  familyName: 'Balogun',
+  alternateName: ['Ajiese', 'AJIESE', 'Christopher Balogun (Ajiese)'],
   jobTitle: 'Artist',
+  hasOccupation: { '@type': 'Occupation', name: 'Visual artist' },
   description: site.defaultDescription,
-  url: new URL('/', base).href,
+  url: abs('/', base),
+  ...(image ? { image: { '@type': 'ImageObject', url: image, caption: `${site.legalName} (Ajiese)` } } : {}),
   email: `mailto:${site.email}`,
   address: { '@type': 'PostalAddress', addressLocality: 'Leicester', addressCountry: 'GB' },
-  alumniOf: { '@type': 'CollegeOrUniversity', name: 'De Montfort University' },
-  sameAs: [site.instagram.url],
+  homeLocation: { '@type': 'Place', name: 'Leicester, United Kingdom' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'De Montfort University', url: 'https://www.dmu.ac.uk/' },
+  knowsAbout: site.knowsAbout,
+  sameAs: site.sameAs,
 });
 
 export const websiteSchema = (base: URL) => ({
-  '@context': 'https://schema.org',
   '@type': 'WebSite',
+  '@id': websiteId(base),
   name: 'Ajiese',
-  url: new URL('/', base).href,
+  alternateName: ['Christopher Balogun', 'Ajiese (Christopher Balogun)', 'ajiese.site'],
+  url: abs('/', base),
   inLanguage: 'en-GB',
-  author: { '@id': new URL('/#artist', base).href },
+  description: site.defaultDescription,
+  publisher: artistRef(base),
+  author: artistRef(base),
 });
 
+export const breadcrumbSchema = (items: { name: string; path: string }[], base: URL) => ({
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((it, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: it.name,
+    item: abs(it.path, base),
+  })),
+});
+
+/** The About page: a profile page about the artist. */
+export const profilePageSchema = (base: URL) => ({
+  '@type': 'ProfilePage',
+  url: abs('/about', base),
+  name: `About ${site.legalName} (Ajiese)`,
+  isPartOf: { '@id': websiteId(base) },
+  mainEntity: artistRef(base),
+  about: artistRef(base),
+});
+
+/** A page listing artworks (home "Selected works" and /work). */
+export const collectionSchema = (artworks: Artwork[], base: URL, path: string, name: string) => ({
+  '@type': 'CollectionPage',
+  url: abs(path, base),
+  name,
+  isPartOf: { '@id': websiteId(base) },
+  about: artistRef(base),
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: artworks.map((a, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: abs(`/work/${a.slug}`, base),
+      name: fullTitle(a),
+    })),
+  },
+});
+
+/** Reads "A2 (42 × 59.4 cm)" → width 42, height 59.4 */
+function size(dimensions: string | null) {
+  const m = dimensions?.match(/(\d+(?:\.\d+)?)\s*[×x]\s*(\d+(?:\.\d+)?)\s*cm/);
+  if (!m) return {};
+  return {
+    width: { '@type': 'Distance', name: `${m[1]} cm` },
+    height: { '@type': 'Distance', name: `${m[2]} cm` },
+  };
+}
+
 export const artworkSchema = (a: Artwork, base: URL, image?: string) => ({
-  '@context': 'https://schema.org',
   '@type': 'VisualArtwork',
+  '@id': abs(`/work/${a.slug}#artwork`, base),
   name: fullTitle(a),
-  url: new URL(`/work/${a.slug}`, base).href,
+  alternateName: a.translation ? [a.title, a.translation] : undefined,
+  url: abs(`/work/${a.slug}`, base),
   description: a.description.join(' '),
+  abstract: a.summary,
   dateCreated: String(a.year),
   artMedium: a.medium,
-  artform: 'Digital artwork',
+  artform: 'Digital art',
   genre: a.category,
-  keywords: a.themes.join(', '),
-  ...(image ? { image } : {}),
-  creator: { '@type': 'Person', '@id': new URL('/#artist', base).href, name: site.legalName, alternateName: site.name },
+  keywords: [a.style, ...a.themes].filter(Boolean).join(', '),
+  ...size(a.dimensions),
+  ...(image
+    ? {
+        image: {
+          '@type': 'ImageObject',
+          url: image,
+          caption: a.alt,
+          creditText: `${site.legalName} (Ajiese)`,
+          copyrightNotice: `© ${site.legalName}`,
+          creator: artistRef(base),
+        },
+      }
+    : {}),
+  creator: artistRef(base),
+  copyrightHolder: artistRef(base),
+  copyrightYear: a.year,
+  isPartOf: { '@id': websiteId(base) },
 });
 
 export const exhibitionSchema = (ex: Exhibition, base: URL) => {
   const art = getArtwork(ex.artwork);
   return {
-    '@context': 'https://schema.org',
     '@type': 'ExhibitionEvent',
     name: ex.title,
-    url: new URL(`/exhibitions/${ex.slug}`, base).href,
+    url: abs(`/exhibitions/${ex.slug}`, base),
     description: ex.introduction.join(' '),
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     ...(ex.startDate ? { startDate: ex.startDate, endDate: ex.endDate ?? ex.startDate } : {}),
     ...(ex.venue
       ? {
@@ -61,7 +146,7 @@ export const exhibitionSchema = (ex: Exhibition, base: URL) => {
         }
       : {}),
     ...(ex.organiser ? { organizer: { '@type': 'Organization', name: ex.organiser } } : {}),
-    performer: { '@type': 'Person', name: `${site.legalName} (${site.name})` },
-    ...(art ? { workFeatured: { '@type': 'VisualArtwork', name: fullTitle(art), url: new URL(`/work/${art.slug}`, base).href } } : {}),
+    performer: artistRef(base),
+    ...(art ? { workFeatured: { '@id': abs(`/work/${art.slug}#artwork`, base) } } : {}),
   };
 };

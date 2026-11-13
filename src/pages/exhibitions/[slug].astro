@@ -10,6 +10,7 @@ import { fullTitle, getArtwork } from '../../data/artworks';
 import { artworkImage, exhibitionImages } from '../../lib/images';
 import { exhibitionStatus, formatDateRange, place, sortExhibitions } from '../../lib/format';
 import { exhibitionSchema } from '../../lib/schema';
+import { clip } from '../../lib/text';
 
 export const getStaticPaths = (() =>
   exhibitions.map((e) => ({ params: { slug: e.slug }, props: { ex: e } }))) satisfies GetStaticPaths;
@@ -34,8 +35,9 @@ const facts: [string, string][] = [
 ---
 
 <Base
-  title={`${ex.title}${ex.organiser && ex.organiser !== ex.title ? ` — ${ex.organiser}` : ''}`}
-  description={ex.introduction[0]}
+  title={`${ex.title}${ex.organiser && ex.organiser !== ex.title ? `, ${ex.organiser}` : ''}`}
+  description={clip(`${ex.introduction[0]} ${ex.introduction[1] ?? ''}`)}
+  breadcrumbs={[{ name: 'Exhibitions', path: '/exhibitions' }, { name: ex.title, path: `/exhibitions/${ex.slug}` }]}
   ogImage={photos[0] ?? artImg}
   jsonLd={exhibitionSchema(ex, Astro.site!)}
 >
@@ -94,7 +96,7 @@ const facts: [string, string][] = [
                 image={artImg}
                 alt={art.alt}
                 label={fullTitle(art)}
-                kicker="Artwork image — placeholder"
+                kicker="Artwork image placeholder"
                 note="Original artwork file to be supplied"
                 ratio={art.placeholderRatio}
                 sizes="(max-width: 860px) 100vw, 40vw"
@@ -145,7 +147,7 @@ const facts: [string, string][] = [
                   <div class="media-inner">
                     <Placeholder
                       ratio={i ? 4 / 5 : 3 / 2}
-                      kicker="Photograph — placeholder"
+                      kicker="Photograph placeholder"
                       label={i ? 'The work in the space' : 'Installation view'}
                       note="Exhibition documentation to be supplied"
                     />

@@ -2,7 +2,7 @@
  * EXHIBITIONS
  * ---------------------------------------------------------------------------
  * Only add confirmed information. Installation photographs go in
- *   src/assets/exhibitions/<slug>/  (any .jpg / .png / .webp — shown in file-name order)
+ *   src/assets/exhibitions/<slug>/  (any .jpg / .png / .webp, shown in file-name order)
  *
  * status:
  *   'scheduled'  → confirmed participation with dates. The site works out

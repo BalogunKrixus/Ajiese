@@ -15,16 +15,16 @@ export function formatDate(iso: string) {
   return full.format(parse(iso));
 }
 
-/** "14 November 2026" · "21–27 November 2026" · "2026" */
+/** "14 November 2026" · "21 to 27 November 2026" · "2026" */
 export function formatDateRange(ex: Pick<Exhibition, 'startDate' | 'endDate' | 'year'>) {
   if (!ex.startDate) return String(ex.year);
   const s = parse(ex.startDate);
   const e = ex.endDate ? parse(ex.endDate) : s;
   if (s.getTime() === e.getTime()) return full.format(s);
   if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear())
-    return `${s.getDate()}–${full.format(e)}`;
-  if (s.getFullYear() === e.getFullYear()) return `${dayMonth.format(s)} – ${full.format(e)}`;
-  return `${full.format(s)} – ${full.format(e)}`;
+    return `${s.getDate()} to ${full.format(e)}`;
+  if (s.getFullYear() === e.getFullYear()) return `${dayMonth.format(s)} to ${full.format(e)}`;
+  return `${full.format(s)} to ${full.format(e)}`;
 }
 
 export type StatusKey = 'upcoming' | 'on-view' | 'exhibited' | 'selected';

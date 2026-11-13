@@ -15,7 +15,25 @@ export const site = {
   },
   intro: 'Exploring identity, culture and memory through contemporary digital portraiture.',
   defaultDescription:
-    'Ajiese is the artistic name of Christopher Balogun, a Leicester-based artist exploring identity, culture and memory through contemporary digital portraiture and collage.',
+    'Ajiese is the artist name of Christopher Balogun, a Leicester-based artist making contemporary digital portraits and collage about identity, culture and memory.',
+  /** Search-friendly name used in page titles. */
+  seoName: 'Ajiese (Christopher Balogun)',
+  /** Subjects the artist is known for, used in structured data for search engines. */
+  knowsAbout: [
+    'Contemporary art',
+    'Digital art',
+    'Digital portraiture',
+    'Digital collage',
+    'Portrait art',
+    'Geometric illustration',
+    'Nigerian visual culture',
+    'Yoruba culture',
+    'Identity',
+    'Cultural heritage',
+    'Photography',
+  ],
+  /** Other profiles that belong to the artist (add LinkedIn, Saatchi Art, etc. here). */
+  sameAs: ['https://www.instagram.com/ajiese_/'],
 } as const;
 
 export const navigation = [

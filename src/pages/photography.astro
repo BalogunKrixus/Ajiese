@@ -22,7 +22,7 @@ const meta = (p: { year?: number; location?: string }) => [p.location, p.year].f
 
 <Base
   title="Photography"
-  description="Photography by Ajiese (Christopher Balogun), a Leicester-based artist working with portraiture, identity and culture."
+  description="Photography by Christopher Balogun (Ajiese), a Leicester-based artist working with portraiture, identity and culture."
   ogImage={shown[0]?.image}
 >
   <section class="page-hero wrap">
@@ -72,7 +72,7 @@ const meta = (p: { year?: number; location?: string }) => [p.location, p.year].f
           <ul class="photos__grid" aria-hidden="true">
             {[3 / 2, 4 / 5, 4 / 5, 3 / 2].map((r, i) => (
               <li class="photo" data-reveal="up" style={`--d:${(i % 2) * 0.08}s`}>
-                <Placeholder ratio={r} kicker="Photograph — placeholder" label={r > 1 ? 'Landscape photograph' : 'Portrait photograph'} note="Photograph to be supplied" />
+                <Placeholder ratio={r} kicker="Photograph placeholder" label={r > 1 ? 'Landscape photograph' : 'Portrait photograph'} note="Photograph to be supplied" />
                 <div class="photo__meta">
                   <p class="photo__title muted">Photograph title</p>
                   <p class="t-meta">Location, year</p>

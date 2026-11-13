@@ -3,12 +3,16 @@ import Base from '../../layouts/Base.astro';
 import Lines from '../../components/Lines.astro';
 import WorkCard from '../../components/WorkCard.astro';
 import ArrowLink from '../../components/ArrowLink.astro';
-import { artworks } from '../../data/artworks';
+import { artworks, fullTitle } from '../../data/artworks';
+import { collectionSchema } from '../../lib/schema';
+import { clip } from '../../lib/text';
 ---
 
 <Base
-  title="Works"
-  description="Selected works by Ajiese: contemporary digital portraits exploring identity, culture, memory and human connection."
+  title="Artworks"
+  breadcrumbs={[{ name: 'Works', path: '/work' }]}
+  description={clip(`Artworks by Christopher Balogun (Ajiese): contemporary digital portraits including ${artworks.map((x) => fullTitle(x)).join(', ')}.`)}
+  jsonLd={collectionSchema(artworks, Astro.site!, '/work', 'Artworks by Ajiese (Christopher Balogun)')}
 >
   <section class="page-hero wrap">
     <div class="page-hero__top" data-reveal="fade">

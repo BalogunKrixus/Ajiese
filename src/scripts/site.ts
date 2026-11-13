@@ -13,7 +13,7 @@ function initReveals() {
     return;
   }
   // Masked elements are fully clipped before they reveal, which hides them from
-  // IntersectionObserver — so we observe their parent instead.
+  // IntersectionObserver, so we observe their parent instead.
   const targets = new Map<Element, HTMLElement[]>();
   const io = new IntersectionObserver(
     (entries) => {

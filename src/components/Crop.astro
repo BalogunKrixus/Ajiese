@@ -1,7 +1,7 @@
 ---
 /**
  * A close-up view of an artwork: either a separately supplied detail image,
- * an enlarged crop of the original file (no alteration — the browser simply
+ * an enlarged crop of the original file (no alteration, the browser simply
  * magnifies part of the image), or a labelled placeholder.
  */
 import type { ImageMetadata } from 'astro';
@@ -35,7 +35,7 @@ const { image, crop: c, alt, ratio = 4 / 5, placeholderLabel } = Astro.props;
       />
     </div>
   ) : (
-    <Placeholder ratio={ratio} kicker="Close-up — placeholder" label={placeholderLabel ?? c.caption} note="Detail image to be supplied" />
+    <Placeholder ratio={ratio} kicker="Close-up placeholder" label={placeholderLabel ?? c.caption} note="Detail image to be supplied" />
   )
 }
 

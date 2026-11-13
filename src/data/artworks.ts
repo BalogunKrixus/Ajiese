@@ -45,11 +45,6 @@ export interface Artwork {
    * Adjust the focal points once the artwork file is in place.
    */
   detailCrops: DetailCrop[];
-  /**
-   * Optional close-up section on the artwork page. Leave out to hide the section.
-   * The close-ups come from separate detail images or, failing that, `detailCrops`.
-   */
-  detailsSection?: { heading: string; intro?: string };
   related?: string[];
 }
 
@@ -153,11 +148,6 @@ export const artworks: Artwork[] = [
       { x: 62, y: 30, zoom: 2.2, caption: 'The red headwrap' },
       { x: 76, y: 86, zoom: 2.4, caption: 'Patterned garment' },
     ],
-    detailsSection: {
-      heading: 'Emotion, Symbolism and Composition',
-      intro:
-        'A closer exploration of the visual elements, cultural references and symbolic details that shape the artwork.',
-    },
     related: ['ewa', 'ase'],
   },
 ];

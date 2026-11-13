@@ -34,7 +34,6 @@ All content is in plain, commented TypeScript files. Edit them, then rebuild.
 - **Artworks:** `src/data/artworks.ts`. Add an entry and the work appears on the homepage, the works index and its own page.
 - **Exhibitions:** `src/data/exhibitions.ts`. For `status: 'scheduled'`, the label (Upcoming / On view / Exhibited) is worked out from the dates **at build time**, so rebuild after an exhibition ends. `'selected'` is never shown as exhibited.
 - **Photography:** `src/data/photography.ts`. Put each photo in `src/assets/photography/<id>.jpg` and add an entry with the same id.
-- **Artwork close-ups:** add `detailsSection` (a heading and an optional intro) to an artwork to show its close-up section; leave it out to hide it.
 - **Press features and press kit:** `src/data/press.ts`. Put downloadable files in `public/press-kit/` and set `file`. Items without a file show "In preparation".
 - **Images:** see `src/assets/README.md`. Drop files into the right folder; placeholders disappear automatically.
 

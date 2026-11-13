@@ -5,11 +5,10 @@ import Base from '../../layouts/Base.astro';
 import ArtImage from '../../components/ArtImage.astro';
 import ArrowLink from '../../components/ArrowLink.astro';
 import Lines from '../../components/Lines.astro';
-import Crop from '../../components/Crop.astro';
 import WorkCard from '../../components/WorkCard.astro';
 import { artworks, fullTitle, getArtwork, type Artwork } from '../../data/artworks';
 import { exhibitions } from '../../data/exhibitions';
-import { artworkDetails, artworkImage } from '../../lib/images';
+import { artworkImage } from '../../lib/images';
 import { exhibitionStatus, formatDateRange } from '../../lib/format';
 import { artworkSchema } from '../../lib/schema';
 
@@ -27,7 +26,6 @@ const related = (a.related ?? artworks.filter((x) => x.slug !== a.slug).map((x) 
 
 const image = artworkImage(a.slug);
 const ratio = image ? image.width / image.height : a.placeholderRatio;
-const details = artworkDetails(a.slug);
 const shownAt = exhibitions.filter((e) => e.artwork === a.slug);
 const schemaImage = image ? new URL((await getImage({ src: image, width: 1600, format: 'jpg' })).src, Astro.site).href : undefined;
 
@@ -41,7 +39,6 @@ const meta: [string, string][] = [
   ['Category', a.category],
   ...(a.style ? ([['Style', a.style]] as [string, string][]) : []),
 ];
-const detailsHeading = a.detailsSection?.heading.replace(/\s(\S+)$/, ' <em>$1</em>');
 ---
 
 <Base
@@ -166,41 +163,6 @@ const detailsHeading = a.detailsSection?.heading.replace(/\s(\S+)$/, ' <em>$1</e
     </div>
   </section>
 
-  <!-- Details & close-ups (only for works that define a details section) -->
-  {a.detailsSection && (
-  <section class="details" aria-labelledby="details-title" data-sequence>
-    <div class="wrap details__head">
-      <div class="details__intro">
-        <p class="t-label muted">Details</p>
-        <h2 class="t-title" id="details-title" set:html={detailsHeading} />
-        {a.detailsSection.intro && <p class="t-meta details__lead">{a.detailsSection.intro}</p>}
-      </div>
-      <div class="details__nav">
-        <button type="button" class="seq-btn" data-sequence-prev aria-label="Previous detail">←</button>
-        <button type="button" class="seq-btn" data-sequence-next aria-label="Next detail">→</button>
-      </div>
-    </div>
-    <ul class="details__track" data-sequence-track tabindex="0" aria-label="Close-up details, scroll horizontally">
-      {
-        details.length > 0
-          ? details.map((d, n) => (
-              <li class="details__item details__item--free">
-                <ArtImage image={d} alt={`${fullTitle(a)}, detail ${n + 1}`} label="" sizes="(max-width: 760px) 80vw, 40vw" />
-                <p class="t-meta">Detail {String(n + 1).padStart(2, '0')}</p>
-              </li>
-            ))
-          : a.detailCrops.map((c, n) => (
-              <li class="details__item">
-                <Crop image={image} crop={c} alt={`${fullTitle(a)}, close-up: ${c.caption.toLowerCase()}`} />
-                <p class="t-meta">
-                  <span class="index">{String(n + 1).padStart(2, '0')}</span> {c.caption}
-                </p>
-              </li>
-            ))
-      }
-    </ul>
-  </section>
-  )}
 
   <!-- Previous / next -->
   <nav class="pn wrap" aria-label="Artwork navigation">
@@ -378,68 +340,6 @@ const detailsHeading = a.detailsSection?.heading.replace(/\s(\S+)$/, ' <em>$1</e
     }
   }
 
-  .details {
-    padding-bottom: var(--section);
-  }
-  .details__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 24px;
-    margin-bottom: 36px;
-  }
-  .details__head h2 {
-    margin-top: 12px;
-  }
-  .details__lead {
-    margin-top: 12px;
-    max-width: 34em;
-    font-size: 15px;
-  }
-  .details__nav {
-    display: flex;
-    gap: 8px;
-  }
-  .seq-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 1px solid var(--line-strong);
-    background: transparent;
-    cursor: pointer;
-    font-size: 16px;
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease,
-      opacity 0.3s ease;
-  }
-  .seq-btn:hover:not(:disabled) {
-    background: var(--ink);
-    color: var(--ivory);
-  }
-  .seq-btn:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-  .details__track {
-    display: flex;
-    gap: 24px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--gutter);
-    padding-inline: var(--gutter);
-    padding-bottom: 12px;
-    scrollbar-width: thin;
-  }
-  .details__item {
-    flex: 0 0 clamp(260px, 34vw, 560px);
-    scroll-snap-align: start;
-    display: grid;
-    gap: 12px;
-  }
-  .details__item .t-meta .index {
-    margin-right: 8px;
-  }
   .pn {
     display: grid;
     grid-template-columns: 1fr 1fr;

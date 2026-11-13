@@ -114,7 +114,7 @@ const documented = exhibitions.filter((e) => e.status !== 'selected');
             const st = exhibitionStatus(ex);
             return (
               <li data-reveal="up" style={`--d:${i * 0.08}s`}>
-                <a href={`/exhibitions/${ex.slug}`} class="doc">
+                <div class="doc">
                   <div class="doc__media">
                     <ArtImage
                       image={photo}
@@ -136,7 +136,7 @@ const documented = exhibitions.filter((e) => e.status !== 'selected');
                     {[ex.organiser !== ex.title ? ex.organiser : null, ex.venue].filter(Boolean).join(' · ')}
                     {art && <><br /><em class="doc__work">{fullTitle(art)}</em></>}
                   </p>
-                </a>
+                </div>
               </li>
             );
           })
@@ -299,14 +299,6 @@ const documented = exhibitions.filter((e) => e.status !== 'selected');
   .doc__media {
     overflow: hidden;
     margin-bottom: 6px;
-  }
-  .doc__media :global(.ph),
-  .doc__media :global(img) {
-    transition: transform 1.2s var(--ease-out);
-  }
-  .doc:hover .doc__media :global(.ph),
-  .doc:hover .doc__media :global(img) {
-    transform: scale(1.04);
   }
   .doc__meta {
     display: flex;

@@ -148,12 +148,12 @@ const meta: [string, string][] = [
                   const st = exhibitionStatus(ex);
                   return (
                     <li>
-                      <a href={`/exhibitions/${ex.slug}`} class="shown__row">
+                      <div class="shown__row">
                         <span class="shown__title">{ex.title}</span>
                         <span class="t-meta">{[ex.venue, ex.city].filter(Boolean).join(', ') || ex.statusNote}</span>
                         <span class="t-meta">{formatDateRange(ex)}</span>
                         <span class={`status status--${st.key}`}>{st.label}</span>
-                      </a>
+                      </div>
                     </li>
                   );
                 })}
@@ -323,10 +323,6 @@ const meta: [string, string][] = [
     align-items: baseline;
     padding-block: 14px;
     border-bottom: 1px solid var(--line);
-    transition: padding 0.5s var(--ease-out);
-  }
-  .shown__row:hover {
-    padding-left: 8px;
   }
   .shown__title {
     font-family: var(--serif);

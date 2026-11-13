@@ -132,7 +132,7 @@ export const exhibitionSchema = (ex: Exhibition, base: URL) => {
   return {
     '@type': 'ExhibitionEvent',
     name: ex.title,
-    url: abs(`/exhibitions/${ex.slug}`, base),
+    url: abs(`/exhibitions#${ex.slug}`, base),
     description: ex.introduction.join(' '),
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     ...(ex.startDate ? { startDate: ex.startDate, endDate: ex.endDate ?? ex.startDate } : {}),

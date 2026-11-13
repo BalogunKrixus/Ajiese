@@ -13,7 +13,7 @@ const art = getArtwork(ex.artwork);
 ---
 
 <article class="ex-card" data-reveal="up" style={`--d:${delay}s`}>
-  <a href={`/exhibitions/${ex.slug}`} class="ex-card__link">
+  <div class="ex-card__body">
     <div class="ex-card__head">
       <span class={`status status--${status.key}`}>{status.label}</span>
       <span class="t-meta">{formatDateRange(ex)}</span>
@@ -25,15 +25,14 @@ const art = getArtwork(ex.artwork);
       {art && (<div><dt>Work</dt><dd><em>{fullTitle(art)}</em></dd></div>)}
       {ex.statusNote && (<div><dt>Note</dt><dd>{ex.statusNote}</dd></div>)}
     </dl>
-    <span class="ex-card__more" aria-hidden="true">Details →</span>
-  </a>
+  </div>
 </article>
 
 <style>
   .ex-card {
     border-top: 1px solid var(--line-strong);
   }
-  .ex-card__link {
+  .ex-card__body {
     display: grid;
     gap: 20px;
     padding-top: 22px;
@@ -45,12 +44,6 @@ const art = getArtwork(ex.artwork);
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
-  }
-  .ex-card__title {
-    transition: transform 0.6s var(--ease-out);
-  }
-  .ex-card__link:hover .ex-card__title {
-    transform: translateX(6px);
   }
   .ex-card__dl {
     display: grid;
@@ -72,16 +65,5 @@ const art = getArtwork(ex.artwork);
   .ex-card__dl em {
     font-family: var(--serif);
     font-size: 1.15em;
-  }
-  .ex-card__more {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    transition: opacity 0.4s ease;
-  }
-  .ex-card__link:hover .ex-card__more {
-    opacity: 1;
   }
 </style>

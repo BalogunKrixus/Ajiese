@@ -1,10 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArtImage from '../../components/ArtImage.astro';
 import Lines from '../../components/Lines.astro';
 import { exhibitions } from '../../data/exhibitions';
 import { fullTitle, getArtwork } from '../../data/artworks';
-import { artworkImage, exhibitionImages } from '../../lib/images';
 import { exhibitionStatus, formatDateRange, place, sortExhibitions } from '../../lib/format';
 import { exhibitionSchema } from '../../lib/schema';
 
@@ -24,7 +22,7 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
     </div>
     <Lines as="h1" class="t-display" lines={['The work,', 'in <em>public.</em>']} />
     <p class="t-lead page-hero__lead" data-reveal="up" style="--d:0.3s">
-      An archive of exhibitions and selections, documenting how the work meets its audiences.
+      A selection of my most recent exhibitions.
     </p>
   </section>
 
@@ -42,29 +40,10 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
               .map((ex, i) => {
                 const st = exhibitionStatus(ex);
                 const art = getArtwork(ex.artwork);
-                const photo = exhibitionImages(ex.slug)[0];
                 const where = [ex.venue, place(ex)].filter(Boolean).join(', ');
                 return (
                   <li class="entry" id={ex.slug} data-reveal="up" style={`--d:${(i % 2) * 0.08}s`}>
                     <div class="entry__link">
-                      <div class="entry__media">
-                        <div class="entry__zoom">
-                          {photo ? (
-                            <ArtImage image={photo} alt={`${ex.title}: exhibition photograph`} label="" sizes="(max-width: 760px) 100vw, 25vw" />
-                          ) : (
-                            <ArtImage
-                              image={art ? artworkImage(art.slug) : undefined}
-                              alt={art ? art.alt : ''}
-                              label={art ? fullTitle(art) : ex.title}
-                              kicker="Artwork image placeholder"
-                              note="Installation photographs to follow"
-                              ratio={art?.placeholderRatio ?? 3 / 4}
-                              sizes="(max-width: 760px) 100vw, 25vw"
-                              compact
-                            />
-                          )}
-                        </div>
-                      </div>
                       <div class="entry__main">
                         <div class="entry__top">
                           <span class={`status status--${st.key}`}>{st.label}</span>
@@ -141,13 +120,10 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
   }
   .entry__link {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--col-gap);
     padding-block: clamp(24px, 3vw, 44px);
     align-items: start;
-  }
-  .entry__media {
-    overflow: hidden;
   }
   .entry__main {
     display: grid;
@@ -209,21 +185,11 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
     .archive__list {
       grid-column: 1 / -1;
     }
-    .entry__link {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    }
-    .entry__dl {
-      grid-column: 2;
-    }
   }
   @media (max-width: 560px) {
     .entry__link {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-      column-gap: 16px;
+      grid-template-columns: 1fr;
       row-gap: 18px;
-    }
-    .entry__dl {
-      grid-column: 1 / -1;
     }
     .entry__title {
       font-size: 28px;

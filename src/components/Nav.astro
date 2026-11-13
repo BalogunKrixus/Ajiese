@@ -234,7 +234,9 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path === href
     display: flex;
     align-items: baseline;
     gap: 18px;
-    padding-block: 10px;
+    /* bottom room for descenders (p, g, y) inside the reveal mask */
+    padding-block: 10px 26px;
+    margin-bottom: -14px;
     transform: translateY(110%);
     transition: transform 0.9s var(--ease-mask);
     transition-delay: calc(0.12s + var(--i) * 0.06s);

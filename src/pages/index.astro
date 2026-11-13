@@ -310,8 +310,8 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
     letter-spacing: -0.035em;
     text-align: center;
     white-space: nowrap;
-    /* oversized — the letters sink slightly below the frame */
-    margin-bottom: calc(var(--word-size) * -0.035);
+    /* leave room below the baseline for the tail of the J */
+    padding-bottom: 0.26em;
   }
   .hero__letters {
     display: flex;
@@ -320,7 +320,10 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
   .hero__letters .ch {
     display: inline-block;
     overflow: hidden;
+    /* the reveal mask must include descenders (the J) */
     padding-top: 0.08em;
+    padding-bottom: 0.3em;
+    margin-bottom: -0.3em;
   }
   .hero__letters .ch > span {
     display: inline-block;
@@ -411,7 +414,6 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
     .hero__word {
       grid-row: 2;
       margin-top: clamp(32px, 7vh, 72px);
-      margin-bottom: 0;
       line-height: 0.74;
     }
     .hero__statement {

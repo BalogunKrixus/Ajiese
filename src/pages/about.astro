@@ -2,10 +2,8 @@
 import Base from '../layouts/Base.astro';
 import ArtImage from '../components/ArtImage.astro';
 import ArrowLink from '../components/ArrowLink.astro';
-import Crop from '../components/Crop.astro';
 import Lines from '../components/Lines.astro';
-import { artworks, fullTitle } from '../data/artworks';
-import { artistPortrait, artworkImage } from '../lib/images';
+import { artistPortrait } from '../lib/images';
 import { profilePageSchema } from '../lib/schema';
 
 const portrait = artistPortrait();
@@ -28,9 +26,6 @@ const themes = [
     text: 'Exploring relationships, care, belonging, fatherhood and shared experiences.',
   },
 ];
-
-// One close-up from each work for the "approach" section
-const closeUps = artworks.map((a) => ({ a, image: artworkImage(a.slug), crop: a.detailCrops[1] ?? a.detailCrops[0] }));
 
 const background = [
   ['Based in', 'Leicester, United Kingdom'],
@@ -175,55 +170,12 @@ const background = [
     </div>
   </section>
 
-  <!-- Approach -->
-  <section class="section approach surface-white" aria-labelledby="approach-title">
-    <div class="wrap">
-      <div class="approach__grid">
-        <div class="approach__head">
-          <p class="t-label muted" data-reveal="fade"><span class="index">04</span>&nbsp;&nbsp;Artistic approach</p>
-          <Lines id="approach-title" class="t-heading" lines={['Between form', 'and <em>representation.</em>']} />
-        </div>
-        <div class="t-body approach__text" data-reveal="up" style="--d:0.15s">
-          <p>
-            Ajiese works primarily through digital image-making, combining simplified shapes, geometric construction,
-            graphic patterns and controlled colour.
-          </p>
-          <p>
-            His approach uses the structure of illustration and collage to create portraits that remain recognisable
-            while allowing room for distortion, exaggeration and abstraction.
-          </p>
-          <p>
-            Clothing, adornment, gesture and composition are not simply decorative elements. They contribute to the
-            meaning and identity of each work.
-          </p>
-        </div>
-      </div>
-
-      <ul class="approach__details" aria-label="Close-up details from selected works">
-        {
-          closeUps.map(({ a, image, crop }, i) => (
-            <li data-reveal="mask" style={`--d:${i * 0.12}s`}>
-              <a href={`/work/${a.slug}`} class="approach__detail">
-                <div class="media-inner">
-                  <Crop image={image} crop={crop} alt={`${fullTitle(a)}, close-up: ${crop.caption.toLowerCase()}`} ratio={3 / 4} placeholderLabel={`${fullTitle(a)}: ${crop.caption.toLowerCase()}`} />
-                </div>
-                <p class="t-meta approach__cap">
-                  <span>Detail</span> <em>{fullTitle(a)}</em>
-                </p>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
   <!-- Background -->
   <section class="section background" aria-labelledby="bg-title">
     <div class="wrap">
       <div class="s-head">
         <div class="s-head__label">
-          <span class="index">05</span>
+          <span class="index">04</span>
           <h2 class="t-label" id="bg-title">Background</h2>
         </div>
         <div class="s-head__main">
@@ -376,67 +328,6 @@ const background = [
     .themes__text {
       grid-column: 1 / -1;
       margin-top: 14px;
-    }
-  }
-
-  .approach__grid {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--col-gap);
-    row-gap: 32px;
-    align-items: end;
-    margin-bottom: clamp(56px, 7vw, 112px);
-  }
-  .approach__head {
-    grid-column: 1 / span 7;
-    display: grid;
-    gap: 28px;
-  }
-  .approach__text {
-    grid-column: 9 / span 4;
-  }
-  @media (max-width: 960px) {
-    .approach__head,
-    .approach__text {
-      grid-column: 1 / -1;
-    }
-  }
-  .approach__details {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(16px, 2vw, 32px);
-    align-items: start;
-  }
-  .approach__details li {
-    overflow: hidden;
-  }
-  .approach__details li:nth-child(2) {
-    margin-top: clamp(40px, 8vw, 140px);
-  }
-  .approach__detail .media-inner {
-    overflow: hidden;
-  }
-  .approach__cap {
-    display: flex;
-    gap: 10px;
-    padding-top: 12px;
-  }
-  .approach__cap em {
-    font-family: var(--serif);
-    font-size: 16px;
-    color: var(--ink);
-  }
-  @media (max-width: 760px) {
-    .approach__details {
-      grid-template-columns: 1fr 1fr;
-    }
-    .approach__details li:nth-child(2) {
-      margin-top: 48px;
-    }
-    .approach__details li:nth-child(3) {
-      grid-column: 1 / -1;
-      width: 70%;
-      justify-self: center;
     }
   }
 

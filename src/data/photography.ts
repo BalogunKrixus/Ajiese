@@ -35,4 +35,24 @@ export const photographs: Photograph[] = [
     id: 'the-offering',
     alt: 'A hand holds out a single yellow daffodil towards the camera, in front of a red jacket, with more daffodils blurred in the background.',
   },
+  {
+    id: 'garden-path-by-the-thatched-hut',
+    alt: 'Black and white photograph of a woman in a bucket hat and patterned shorts standing on a garden path beside a thatched hut, large clay pots and tropical plants around her.',
+  },
+  {
+    id: 'city-facade-and-red-bus',
+    alt: 'Black and white photograph looking up at a modern office building with a grid of framed windows reflecting the street, a double-decker bus passing below in the sunlight.',
+  },
+  {
+    id: 'leicester-square-at-dusk',
+    alt: 'Leicester Square in London at dusk under a deep blue sky, with the lit Vue cinema sign, the Hippodrome Casino and tall billboards for West End musicals above the crowd.',
+  },
+  {
+    id: 'among-the-portraits',
+    alt: 'A smiling man in a grey and white fleece and jeans stands in a gallery among sculpted busts on marble plinths, in front of a wall covered in black profile silhouettes.',
+  },
+  {
+    id: 'two-women-smiling',
+    alt: 'Black and white photograph of two smiling women seated at a table, both wearing patterned headwraps and prints, one raising a peace sign.',
+  },
 ];

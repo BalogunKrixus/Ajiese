@@ -122,6 +122,14 @@ const meta: [string, string][] = [
               </div>
             )
           }
+          {
+            a.furtherInfo && (
+              <div>
+                <dt>Further information</dt>
+                <dd>{a.furtherInfo}</dd>
+              </div>
+            )
+          }
         </dl>
         <div data-reveal="up" style="--d:0.15s">
           <ArrowLink href={enquiry}>Enquire about this work</ArrowLink>

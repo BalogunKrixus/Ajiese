@@ -36,6 +36,8 @@ export interface Artwork {
   themes: string[];
   /** e.g. "Available, enquire", "Private collection", or null to hide. */
   availability: string | null;
+  /** Optional extra line, e.g. installation notes. Shown as "Further information". */
+  furtherInfo?: string;
   /** Descriptive alt text for the artwork image. */
   alt: string;
   /** Aspect ratio (width / height) used only for the placeholder before the real file is added. */
@@ -149,6 +151,31 @@ export const artworks: Artwork[] = [
       { x: 76, y: 86, zoom: 2.4, caption: 'Patterned garment' },
     ],
     related: ['ewa', 'ase'],
+  },
+  {
+    slug: 'iworo',
+    title: 'ÌWỌ̀RỌ̀',
+    translation: 'The Groom',
+    year: 2026,
+    medium: 'Digital artwork',
+    dimensions: 'A2 (42 × 59.4 cm)',
+    category: 'Contemporary digital portraiture',
+    summary: 'A contemporary digital portrait celebrating Yoruba identity, tradition and ceremonial dress.',
+    description: [
+      'ÌWỌ̀RỌ̀ is a contemporary digital portrait celebrating Yoruba identity, tradition and ceremonial dress. The work depicts a Yoruba groom dressed in traditional wedding attire, with elements such as the fila, agbada and coral beads forming an important part of his visual identity.',
+      'Through bold geometric forms, simplified features and a striking composition, the portrait explores how clothing and adornment communicate heritage, status and belonging. It presents traditional Yoruba dress through a contemporary visual language, bringing cultural expression into a modern artistic context.',
+    ],
+    themes: ['Yoruba identity', 'Tradition', 'Ceremonial dress', 'Heritage'],
+    availability: null,
+    furtherInfo: 'No special installation requirements.',
+    alt: 'ÌWỌ̀RỌ̀ (The Groom) by Ajiese: a Yoruba groom in a yellow and cream agbada and fila with a long coral bead necklace, his face built from bold geometric shapes, against a pale patterned background.',
+    placeholderRatio: 42 / 59.4,
+    detailCrops: [
+      { x: 50, y: 22, zoom: 2.4, caption: 'Fila' },
+      { x: 50, y: 30, zoom: 2.4, caption: 'Geometric features' },
+      { x: 50, y: 75, zoom: 2.4, caption: 'Coral beads and agbada' },
+    ],
+    related: ['ewa', 'the-quiet-weight'],
   },
 ];
 

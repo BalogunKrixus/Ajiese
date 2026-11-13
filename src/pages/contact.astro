@@ -54,10 +54,6 @@ const details: [string, string, string?][] = [
           ))
         }
       </dl>
-      <a href={`mailto:${site.email}`} class="direct">
-        <span class="t-label muted">Or write directly</span>
-        <span class="direct__mail">{site.email}</span>
-      </a>
     </aside>
 
     <div class="contact__form" data-reveal="up" style="--d:0.12s">
@@ -287,25 +283,6 @@ const details: [string, string, string?][] = [
   }
   .info-list dd {
     word-break: break-word;
-  }
-  .direct {
-    display: grid;
-    gap: 10px;
-  }
-  .direct__mail {
-    font-family: var(--serif);
-    font-size: clamp(22px, 2.2vw, 34px);
-    line-height: 1.1;
-    word-break: break-word;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 0% 1px;
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    transition: background-size 0.6s var(--ease-out);
-    justify-self: start;
-  }
-  .direct:hover .direct__mail {
-    background-size: 100% 1px;
   }
 
   .form {

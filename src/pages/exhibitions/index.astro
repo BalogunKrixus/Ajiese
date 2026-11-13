@@ -84,14 +84,12 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
     }
   </section>
 
-  <section class="wrap archive-note">
-    <p class="t-meta">
-      Further exhibitions will be added as they are confirmed. Statuses reflect confirmed information only.
-    </p>
-  </section>
 </Base>
 
 <style>
+  .archive {
+    padding-bottom: var(--section);
+  }
   .archive__year {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -169,11 +167,6 @@ const years = [...new Set(list.map((e) => e.year))].sort((a, b) => b - a);
   .entry__dl em {
     font-family: var(--serif);
     font-size: 1.15em;
-  }
-  .archive-note {
-    border-top: 1px solid var(--line);
-    padding-top: 20px;
-    padding-bottom: var(--section);
   }
   @media (max-width: 960px) {
     .archive__yr {

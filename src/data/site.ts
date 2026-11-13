@@ -40,7 +40,6 @@ export const navigation = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Photography', href: '/photography' },
-  { label: 'Press', href: '/press' },
   { label: 'Exhibitions', href: '/exhibitions' },
   { label: 'Contact', href: '/contact' },
 ] as const;

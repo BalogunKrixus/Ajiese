@@ -136,11 +136,11 @@ export const exhibitionSchema = (ex: Exhibition, base: URL) => {
     description: ex.introduction.join(' '),
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     ...(ex.startDate ? { startDate: ex.startDate, endDate: ex.endDate ?? ex.startDate } : {}),
-    ...(ex.venue
+    ...(ex.venue || ex.city
       ? {
           location: {
             '@type': 'Place',
-            name: ex.venue,
+            name: ex.venue ?? [ex.city, ex.country].filter(Boolean).join(', '),
             address: { '@type': 'PostalAddress', addressLocality: ex.city, addressCountry: ex.country },
           },
         }

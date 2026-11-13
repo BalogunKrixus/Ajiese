@@ -107,7 +107,6 @@ export const exhibitions: Exhibition[] = [
     endDate: null,
     artwork: 'iworo',
     status: 'selected',
-    statusNote: 'Physical exhibition arrangements are not yet confirmed.',
     introduction: [
       'Ajiese has been selected for the IFA 2026 Visual Arts Exhibition in Ibadan, Nigeria, with ÌWỌ̀RỌ̀ (The Groom).',
       'Details of how the work will be presented will be shared here once the organiser confirms the participation arrangements.',

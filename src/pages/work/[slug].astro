@@ -1,4 +1,5 @@
 ---
+import { site } from '../../data/site';
 import type { GetStaticPaths } from 'astro';
 import { getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
@@ -30,7 +31,7 @@ const ratio = image ? image.width / image.height : a.placeholderRatio;
 const shownAt = exhibitions.filter((e) => e.artwork === a.slug);
 const schemaImage = image ? new URL((await getImage({ src: image, width: 1600, format: 'jpg' })).src, Astro.site).href : undefined;
 
-const enquiry = `/contact?subject=${encodeURIComponent(`Artwork enquiry: ${fullTitle(a)}`)}`;
+const enquiry = `mailto:${site.email}?subject=${encodeURIComponent(`Artwork enquiry: ${fullTitle(a)}`)}`;
 const meta: [string, string][] = [
   ['Title', fullTitle(a)],
   ['Artist', 'Ajiese (Christopher Balogun)'],

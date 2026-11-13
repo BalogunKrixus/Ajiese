@@ -1,4 +1,5 @@
 ---
+import { site } from '../../data/site';
 import Base from '../../layouts/Base.astro';
 import Lines from '../../components/Lines.astro';
 import WorkCard from '../../components/WorkCard.astro';
@@ -31,7 +32,7 @@ import { clip } from '../../lib/text';
 
   <section class="wrap works-note">
     <p class="t-meta">New works will be added here as the practice develops.</p>
-    <ArrowLink href="/contact?subject=Artwork%20enquiry">Artwork enquiries</ArrowLink>
+    <ArrowLink href={`mailto:${site.email}?subject=${encodeURIComponent('Artwork enquiry')}`}>Artwork enquiries</ArrowLink>
   </section>
 </Base>
 

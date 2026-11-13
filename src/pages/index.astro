@@ -184,7 +184,7 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
           hear from you.
         </p>
         <div class="connect__links" data-reveal="up" style="--d:0.3s">
-          <ArrowLink href="/contact">Contact the artist</ArrowLink>
+          <ArrowLink href={`mailto:${site.email}`}>Email the artist</ArrowLink>
           <ArrowLink href={site.instagram.url} external>Instagram</ArrowLink>
         </div>
       </div>

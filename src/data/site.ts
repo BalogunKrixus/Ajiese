@@ -41,5 +41,4 @@ export const navigation = [
   { label: 'About', href: '/about' },
   { label: 'Photography', href: '/photography' },
   { label: 'Exhibitions', href: '/exhibitions' },
-  { label: 'Contact', href: '/contact' },
 ] as const;

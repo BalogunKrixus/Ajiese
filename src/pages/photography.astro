@@ -1,4 +1,5 @@
 ---
+import { site } from '../data/site';
 import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ArrowLink from '../components/ArrowLink.astro';
@@ -56,7 +57,7 @@ const shown = photographs
 
   <section class="wrap photos-foot">
     <p class="t-meta">For prints, commissions or licensing enquiries, please get in touch.</p>
-    <ArrowLink href="/contact?subject=Photography%20enquiry">Photography enquiries</ArrowLink>
+    <ArrowLink href={`mailto:${site.email}?subject=${encodeURIComponent('Photography enquiry')}`}>Photography enquiries</ArrowLink>
   </section>
 </Base>
 

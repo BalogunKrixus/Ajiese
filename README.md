@@ -23,7 +23,6 @@ Requires Node 18.20+ (Node 20 or 22 recommended).
 | `/photography` | Photography gallery |
 | `/about` | Biography, artist statement, themes, approach, background |
 | `/exhibitions`, `/exhibitions/<slug>` | Exhibition archive; one page per exhibition |
-| `/contact` | Contact details and form |
 
 ## Updating content
 
@@ -37,12 +36,11 @@ All content is in plain, commented TypeScript files. Edit them, then rebuild.
 - **Press features and press kit:** `src/data/press.ts`. Put downloadable files in `public/press-kit/` and set `file`. Items without a file show "In preparation".
 - **Images:** see `src/assets/README.md`. Drop files into the right folder; placeholders disappear automatically.
 
-## Contact form
+## Contact
 
-Set `PUBLIC_FORM_ENDPOINT` (see `.env.example`) to a form service URL such as a Formspree form.
-The form posts there and shows a confirmation. **If it isn't set**, submitting opens the visitor's
-email app with the message pre-filled to `balogunkrixus@gmail.com`, so the form still works
-without a backend. The form has field validation, a honeypot field and a minimum completion time to deter spam.
+There is no contact page or form. Visitors use the email and Instagram links in the footer,
+and the enquiry buttons on the homepage, About, works and Photography pages open an email
+to the artist with the subject filled in.
 
 ## Deployment (ajiese.site)
 
@@ -92,4 +90,3 @@ House style: no em dashes or en dashes anywhere on the site (titles and descript
 - [ ] Confirm the RESONANCE exhibition dates (currently shown as 2026 only)
 - [ ] Confirm IFA 2026 participation arrangements before changing its status
 - [ ] Add press kit files, or leave them as "In preparation"
-- [ ] Set `PUBLIC_FORM_ENDPOINT` and send a test message

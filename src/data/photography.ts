@@ -55,4 +55,24 @@ export const photographs: Photograph[] = [
     id: 'two-women-smiling',
     alt: 'Black and white photograph of two smiling women seated at a table, both wearing patterned headwraps and prints, one raising a peace sign.',
   },
+  {
+    id: 'tile-hung-cottage-in-summer',
+    alt: 'An old English cottage with a red tiled roof, tile-hung walls and a tall brick chimney behind a flowering garden and wooden gate, under a clear blue summer sky.',
+  },
+  {
+    id: 'friends-at-the-old-tower',
+    alt: 'Four friends pose at the foot of an old round stone tower with a ruined arch, seen from low on a grassy hilltop scattered with autumn leaves.',
+  },
+  {
+    id: 'friends-on-a-night-street',
+    alt: 'Three smiling friends pose playfully on a city street at night, the woman in the middle holding her face in her hands, shop lights blurred behind them.',
+  },
+  {
+    id: 'three-friends-by-the-green-shopfront',
+    alt: 'Three friends stand together in front of a green shopfront with frosted glass windows etched with knotwork patterns.',
+  },
+  {
+    id: 'garden-pond-in-summer',
+    alt: 'A tall young tree beside a pond covered in green water plants and reeds, with dense woodland and a single bench beyond, under a clear blue sky.',
+  },
 ];

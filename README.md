@@ -20,6 +20,7 @@ Requires Node 18.20+ (Node 20 or 22 recommended).
 | --- | --- |
 | `/` | Home: hero, selected works, artist introduction, exhibitions, contact invitation |
 | `/work`, `/work/<slug>` | All works; one page per artwork (`the-quiet-weight`, `ewa`, `ase`) |
+| `/photography` | Photography, with a full-screen viewer |
 | `/about` | Biography, artist statement, themes, approach, background |
 | `/exhibitions`, `/exhibitions/<slug>` | Exhibition archive; one page per exhibition |
 | `/press` | Features, exhibition documentation, press kit, enquiries |
@@ -32,6 +33,8 @@ All content is in plain, commented TypeScript files. Edit them, then rebuild.
 - **Artist details:** `src/data/site.ts`
 - **Artworks:** `src/data/artworks.ts`. Add an entry and the work appears on the homepage, the works index and its own page.
 - **Exhibitions:** `src/data/exhibitions.ts`. For `status: 'scheduled'`, the label (Upcoming / On view / Exhibited) is worked out from the dates **at build time**, so rebuild after an exhibition ends. `'selected'` is never shown as exhibited.
+- **Photography:** `src/data/photography.ts`. Put each photo in `src/assets/photography/<id>.jpg` and add an entry with the same id.
+- **Artwork close-ups:** add `detailsSection` (a heading and an optional intro) to an artwork to show its close-up section; leave it out to hide it.
 - **Press features and press kit:** `src/data/press.ts`. Put downloadable files in `public/press-kit/` and set `file`. Items without a file show "In preparation".
 - **Images:** see `src/assets/README.md`. Drop files into the right folder; placeholders disappear automatically.
 
@@ -64,7 +67,6 @@ Any other static host also works (Cloudflare Pages, Vercel): build `npm run buil
 
 - [ ] Add the original artwork files (`src/assets/artworks/`)
 - [ ] Add an approved artist portrait (`src/assets/artist/portrait.jpg`)
-- [ ] Confirm each artwork's dimensions (currently "To be confirmed")
 - [ ] Adjust the close-up focal points in `artworks.ts` once the real files are in, or supply detail images
 - [ ] Add installation photographs as they become available
 - [ ] Confirm the RESONANCE exhibition dates (currently shown as 2026 only)

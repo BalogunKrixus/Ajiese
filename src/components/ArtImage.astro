@@ -36,6 +36,7 @@ const style = vt ? `view-transition-name:${vt}` : undefined;
       src={image}
       alt={alt}
       formats={['avif', 'webp']}
+      fallbackFormat="jpg"
       widths={widths}
       sizes={sizes}
       loading={eager ? 'eager' : 'lazy'}

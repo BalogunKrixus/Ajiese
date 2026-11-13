@@ -448,8 +448,9 @@ html.js [data-reveal='mask']:not(.is-in) .media-inner {
 .line {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
+  /* room for accents above capitals (e.g. Ẹ̀) and descenders below */
+  padding-block: 0.16em 0.08em;
+  margin-block: -0.16em -0.08em;
 }
 .line > span {
   display: block;

@@ -27,3 +27,4 @@ export const artistPortrait = () => single('/src/assets/artist/portrait');
 export const artistStudio = () => single('/src/assets/artist/studio');
 export const exhibitionImages = (slug: string) => inFolder(`/src/assets/exhibitions/${slug}`);
 export const pressImage = (id: string) => single(`/src/assets/press/${id}`);
+export const photographImage = (id: string) => single(`/src/assets/photography/${id}`);

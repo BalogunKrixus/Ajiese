@@ -29,6 +29,8 @@ export interface Artwork {
   /** Leave null until the dimensions are confirmed — the site will say "To be confirmed". */
   dimensions: string | null;
   category: string;
+  /** Optional style line, e.g. "Geometric digital illustration". */
+  style?: string;
   summary: string;
   description: string[];
   themes: string[];
@@ -43,6 +45,11 @@ export interface Artwork {
    * Adjust the focal points once the artwork file is in place.
    */
   detailCrops: DetailCrop[];
+  /**
+   * Optional close-up section on the artwork page. Leave out to hide the section.
+   * The close-ups come from separate detail images or, failing that, `detailCrops`.
+   */
+  detailsSection?: { heading: string; intro?: string };
   related?: string[];
 }
 
@@ -52,7 +59,7 @@ export const artworks: Artwork[] = [
     title: 'The Quiet Weight',
     year: 2026,
     medium: 'Digital artwork',
-    dimensions: null, // Brief example: A2 (42 × 59.4 cm) — confirm before publishing.
+    dimensions: 'A2 (42 × 59.4 cm)',
     category: 'Contemporary digital portraiture',
     summary:
       'A portrait exploring fatherhood, care, protection and responsibility through the image of a father carrying a sleeping child.',
@@ -78,7 +85,7 @@ export const artworks: Artwork[] = [
     translation: 'Beauty',
     year: 2026,
     medium: 'Digital artwork',
-    dimensions: null,
+    dimensions: 'A2 (42 × 59.4 cm)',
     category: 'Contemporary digital portraiture',
     summary:
       'A contemporary portrait exploring beauty, identity, adornment and self-expression through Nigerian visual references.',
@@ -103,7 +110,7 @@ export const artworks: Artwork[] = [
     translation: 'Together',
     year: 2026,
     medium: 'Digital artwork',
-    dimensions: null,
+    dimensions: 'A2 (42 × 59.4 cm)',
     category: 'Contemporary digital portraiture',
     summary: 'A portrait of two figures exploring connection, togetherness and cultural identity.',
     description: [
@@ -120,6 +127,38 @@ export const artworks: Artwork[] = [
       { x: 19, y: 77, zoom: 2.6, caption: 'Clothing and pattern' },
     ],
     related: ['ewa', 'the-quiet-weight'],
+  },
+  {
+    slug: 'ebe',
+    title: 'Ẹ̀BẸ̀',
+    translation: 'A Plea',
+    year: 2026,
+    medium: 'Digital art',
+    dimensions: 'A2 (42 × 59.4 cm)',
+    category: 'Contemporary digital portraiture',
+    style: 'Geometric digital illustration',
+    summary:
+      'A reflection on vulnerability, emotional expression and the courage to ask for understanding. Through the symbol of a heart held in open hands, the work explores the human need for compassion and connection.',
+    description: [
+      'Ẹ̀BẸ̀ explores vulnerability through the symbolic image of a heart held between two hands. The central figure, dressed in a striking red headwrap and patterned garment, represents the emotional weight of asking to be heard, understood and acknowledged.',
+      'The heart becomes a symbol of sincerity, openness and the willingness to make oneself vulnerable. Through the relationship between the figure and the hands, the work considers the importance of compassion and the human need for connection.',
+      'Combining bold geometric forms, expressive gestures and layered colours, the piece reflects on the courage it takes to make a plea and the humanity behind every request for understanding.',
+    ],
+    themes: ['Vulnerability', 'Emotional expression', 'Compassion', 'Connection'],
+    availability: null,
+    alt: 'Ẹ̀BẸ̀ (A Plea) by Ajiese: a woman in a folded red geometric headwrap, coral beads and a red and white patterned garment looks towards a pair of hands holding a red heart, against a soft watercolour sky.',
+    placeholderRatio: 42 / 59.4,
+    detailCrops: [
+      { x: 22, y: 60, zoom: 2.4, caption: 'The heart held in open hands' },
+      { x: 62, y: 30, zoom: 2.2, caption: 'The red headwrap' },
+      { x: 76, y: 86, zoom: 2.4, caption: 'Patterned garment' },
+    ],
+    detailsSection: {
+      heading: 'Emotion, Symbolism and Composition',
+      intro:
+        'A closer exploration of the visual elements, cultural references and symbolic details that shape the artwork.',
+    },
+    related: ['ewa', 'ase'],
   },
 ];
 

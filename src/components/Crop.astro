@@ -26,6 +26,7 @@ const { image, crop: c, alt, ratio = 4 / 5, placeholderLabel } = Astro.props;
         src={image}
         alt={alt}
         formats={['avif', 'webp']}
+        fallbackFormat="jpg"
         widths={[800, 1400, 2000, image.width].filter((w, i, arr) => w <= image.width && arr.indexOf(w) === i)}
         sizes={`${Math.min(100, Math.round(c.zoom * 40))}vw`}
         loading="lazy"

@@ -1,0 +1,341 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ArtImage from '../components/ArtImage.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import Lines from '../components/Lines.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { photographs } from '../data/photography';
+import { photographImage } from '../lib/images';
+
+// Only photographs whose file exists are shown.
+const items = await Promise.all(
+  photographs.map(async (p) => {
+    const image = photographImage(p.id);
+    const full = image ? (await getImage({ src: image, width: Math.min(2400, image.width), format: 'webp' })).src : null;
+    return { ...p, image, full };
+  }),
+);
+const shown = items.filter((p) => p.image);
+const meta = (p: { year?: number; location?: string }) => [p.location, p.year].filter(Boolean).join(', ');
+---
+
+<Base
+  title="Photography"
+  description="Photography by Ajiese (Christopher Balogun), a Leicester-based artist working with portraiture, identity and culture."
+  ogImage={shown[0]?.image}
+>
+  <section class="page-hero wrap">
+    <div class="page-hero__top" data-reveal="fade">
+      <p class="t-label">Photography</p>
+      <span class="index">({String(shown.length).padStart(2, '0')})</span>
+    </div>
+    <Lines as="h1" class="t-display" lines={['Through the', '<em>lens.</em>']} />
+    <p class="t-lead page-hero__lead" data-reveal="up" style="--d:0.3s">A developing collection of photographs by Ajiese.</p>
+  </section>
+
+  <section class="wrap photos" aria-label="Photographs">
+    {
+      shown.length > 0 ? (
+        <ul class="photos__grid">
+          {shown.map((p, i) => (
+            <li class="photo" data-reveal="up" style={`--d:${(i % 2) * 0.08}s`}>
+              <button
+                type="button"
+                class="photo__open"
+                data-lightbox-open={i}
+                data-full={p.full}
+                data-alt={p.alt}
+                data-title={p.title}
+                data-meta={meta(p)}
+                data-caption={p.caption ?? ''}
+                aria-label={`View ${p.title} full screen`}
+              >
+                <span class="photo__media">
+                  <ArtImage image={p.image} alt={p.alt} label={p.title} sizes="(max-width: 760px) 100vw, 50vw" />
+                </span>
+              </button>
+              <div class="photo__meta">
+                <h2 class="photo__title">{p.title}</h2>
+                {meta(p) && <p class="t-meta">{meta(p)}</p>}
+                {p.caption && <p class="photo__caption">{p.caption}</p>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <>
+          <p class="notice" data-reveal="up">
+            <span class="notice__tag">Layout preview</span>
+            Photographs will be published here soon. The frames below show how they will appear.
+          </p>
+          <ul class="photos__grid" aria-hidden="true">
+            {[3 / 2, 4 / 5, 4 / 5, 3 / 2].map((r, i) => (
+              <li class="photo" data-reveal="up" style={`--d:${(i % 2) * 0.08}s`}>
+                <Placeholder ratio={r} kicker="Photograph — placeholder" label={r > 1 ? 'Landscape photograph' : 'Portrait photograph'} note="Photograph to be supplied" />
+                <div class="photo__meta">
+                  <p class="photo__title muted">Photograph title</p>
+                  <p class="t-meta">Location, year</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+  </section>
+
+  <section class="wrap photos-foot">
+    <p class="t-meta">For prints, commissions or licensing enquiries, please get in touch.</p>
+    <ArrowLink href="/contact?subject=Photography%20enquiry">Photography enquiries</ArrowLink>
+  </section>
+
+  {
+    shown.length > 0 && (
+      <dialog class="lightbox" data-lightbox aria-label="Photograph viewer">
+        <div class="lightbox__inner">
+          <button type="button" class="lightbox__close" data-lightbox-close>
+            Close <span aria-hidden="true">×</span>
+          </button>
+          <figure class="lightbox__figure">
+            <img data-lightbox-img alt="" />
+            <figcaption class="lightbox__cap">
+              <span class="lightbox__title" data-lightbox-title />
+              <span class="t-meta" data-lightbox-meta />
+              <span class="lightbox__text" data-lightbox-caption />
+            </figcaption>
+          </figure>
+          <div class="lightbox__nav">
+            <button type="button" class="seq-btn" data-lightbox-prev aria-label="Previous photograph">←</button>
+            <span class="index" data-lightbox-count />
+            <button type="button" class="seq-btn" data-lightbox-next aria-label="Next photograph">→</button>
+          </div>
+        </div>
+      </dialog>
+    )
+  }
+</Base>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-lightbox-open]'));
+  if (dialog && triggers.length) {
+    const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const set = (sel: string, text: string) => (dialog.querySelector(sel)!.textContent = text);
+    let current = 0;
+    let opener: HTMLElement | null = null;
+
+    const show = (i: number) => {
+      current = (i + triggers.length) % triggers.length;
+      const t = triggers[current].dataset;
+      img.src = t.full || '';
+      img.alt = t.alt || '';
+      set('[data-lightbox-title]', t.title || '');
+      set('[data-lightbox-meta]', t.meta || '');
+      set('[data-lightbox-caption]', t.caption || '');
+      set('[data-lightbox-count]', `${current + 1} / ${triggers.length}`);
+    };
+
+    triggers.forEach((btn, i) =>
+      btn.addEventListener('click', () => {
+        opener = btn;
+        show(i);
+        dialog.showModal();
+        document.documentElement.classList.add('lightbox-open');
+      }),
+    );
+    dialog.addEventListener('close', () => {
+      document.documentElement.classList.remove('lightbox-open');
+      opener?.focus();
+    });
+    dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => show(current + 1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+    // Click on the backdrop closes
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    const hide = triggers.length < 2;
+    dialog.querySelector<HTMLElement>('.lightbox__nav')!.hidden = hide;
+  }
+</script>
+
+<style>
+  .notice {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--ink-70);
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  .notice__tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    border: 1px solid currentColor;
+    padding: 4px 8px;
+  }
+
+  /* Two-column masonry: photographs keep their own proportions */
+  .photos__grid {
+    columns: 2;
+    column-gap: clamp(24px, 4vw, 72px);
+  }
+  .photo {
+    break-inside: avoid;
+    margin-bottom: clamp(48px, 6vw, 104px);
+    display: grid;
+    gap: 16px;
+  }
+  .photo__open {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+  .photo__media {
+    display: block;
+    overflow: hidden;
+  }
+  .photo__media :global(img) {
+    transition: transform 1.4s var(--ease-out);
+  }
+  .photo__open:hover .photo__media :global(img) {
+    transform: scale(1.03);
+  }
+  .photo__meta {
+    display: grid;
+    gap: 4px;
+  }
+  .photo__title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(22px, 1.8vw, 28px);
+    line-height: 1.15;
+  }
+  .photo__caption {
+    font-size: 14px;
+    color: var(--ink-70);
+    max-width: 36em;
+    margin-top: 4px;
+  }
+  @media (max-width: 760px) {
+    .photos__grid {
+      columns: 1;
+    }
+  }
+
+  .photos-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    padding-bottom: var(--section);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .lightbox::backdrop {
+    background: rgb(23 23 23 / 0.6);
+  }
+  .lightbox[open] {
+    animation: lb-in 0.5s var(--ease-out);
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+    }
+  }
+  .lightbox__inner {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    padding: 16px var(--gutter) 24px;
+  }
+  .lightbox__close {
+    justify-self: end;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 10px 0;
+  }
+  .lightbox__figure {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 14px;
+    justify-items: center;
+  }
+  .lightbox__figure img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    min-height: 0;
+  }
+  .lightbox__cap {
+    display: grid;
+    gap: 2px;
+    text-align: center;
+    max-width: 40em;
+  }
+  .lightbox__title {
+    font-family: var(--serif);
+    font-size: 22px;
+  }
+  .lightbox__text {
+    font-size: 14px;
+    color: var(--ink-70);
+  }
+  .lightbox__nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .seq-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .seq-btn:hover {
+    background: var(--ink);
+    color: var(--ivory);
+  }
+  :global(html.lightbox-open) {
+    overflow: hidden;
+  }
+</style>

@@ -75,4 +75,24 @@ export const photographs: Photograph[] = [
     id: 'garden-pond-in-summer',
     alt: 'A tall young tree beside a pond covered in green water plants and reeds, with dense woodland and a single bench beyond, under a clear blue sky.',
   },
+  {
+    id: 'woodland-path-in-summer',
+    alt: 'Black and white photograph of a narrow footpath winding into sunlit woodland, ferns and undergrowth on both sides and a fallen branch arching overhead.',
+  },
+  {
+    id: 'sunflower-and-bee',
+    alt: 'Close-up of a bright yellow sunflower with a bumblebee resting in its dark centre, against a red brick wall.',
+  },
+  {
+    id: 'seafront-promenade',
+    alt: 'A curving seafront promenade with a stone sea wall and tall lamp posts, a pebble beach and calm sea beside it, the skeleton of an old pier on the horizon under a wide pale sky.',
+  },
+  {
+    id: 'towers-by-the-station',
+    alt: 'Tall residential towers and a curved white apartment block rising behind a red brick railway station building and trees, under a bright blue sky with light cloud.',
+  },
+  {
+    id: 'graduation-selfie',
+    alt: 'Black and white photograph of four smiling graduates in caps and gowns taking a selfie together on a city street, making peace signs.',
+  },
 ];

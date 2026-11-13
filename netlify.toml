@@ -1,0 +1,27 @@
+# Netlify deployment for ajiese.site
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  SITE_URL = "https://ajiese.site"
+
+# Send www and the default Netlify address to the main domain
+[[redirects]]
+  from = "https://www.ajiese.site/*"
+  to = "https://ajiese.site/:splat"
+  status = 301
+  force = true
+
+# Long-lived caching for fingerprinted build assets
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

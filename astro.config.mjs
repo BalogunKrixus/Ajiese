@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // Set SITE_URL in the deployment environment once the domain is confirmed.
-const site = process.env.SITE_URL || 'https://www.ajiese.com';
+const site = process.env.SITE_URL || 'https://ajiese.site';
 
 export default defineConfig({
   site,

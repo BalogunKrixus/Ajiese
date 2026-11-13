@@ -42,10 +42,16 @@ The form posts there and shows a confirmation. **If it isn't set**, submitting o
 email app with the message pre-filled to `balogunkrixus@gmail.com`, so the form still works
 without a backend. The form has field validation, a honeypot field and a minimum completion time to deter spam.
 
-## Deployment
+## Deployment (ajiese.site)
 
-Any static host works (Netlify, Vercel, Cloudflare Pages, GitHub Pages). Build command `npm run build`, output `dist/`.
-Set `SITE_URL` to the final domain so canonical links, the sitemap and Open Graph images are correct.
+The site is set up for **Netlify** (`netlify.toml`): build command `npm run build`, output `dist/`, Node 22,
+and `SITE_URL=https://ajiese.site`. Every push to the deployed branch rebuilds the live site.
+
+1. Sign in at netlify.com with GitHub, choose **Add new site → Import an existing project**, and pick `BalogunKrixus/Ajiese`.
+2. Set the branch to deploy, then click **Deploy**. The settings are read from `netlify.toml`.
+3. In **Domain management**, add `ajiese.site`, then add the DNS records Netlify shows at your domain registrar. HTTPS is issued automatically.
+
+Any other static host also works (Cloudflare Pages, Vercel): build `npm run build`, output `dist/`.
 
 ## Design system
 
@@ -65,4 +71,3 @@ Set `SITE_URL` to the final domain so canonical links, the sitemap and Open Grap
 - [ ] Confirm IFA 2026 participation arrangements before changing its status
 - [ ] Add press kit files, or leave them as "In preparation"
 - [ ] Set `PUBLIC_FORM_ENDPOINT` and send a test message
-- [ ] Set `SITE_URL` to the final domain

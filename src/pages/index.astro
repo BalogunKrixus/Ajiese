@@ -195,12 +195,14 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
 <style>
   /* ---------------- Hero ---------------- */
   .hero {
-    --art-h: min(54svh, 40vw);
-    --word-size: 27vw;
+    /* sized by width and height, so the whole wordmark (J included) fits the first screen */
+    --art-h: min(46svh, 40vw);
+    --word-size: min(27vw, 38svh);
     min-height: 100svh;
     display: flex;
     padding-top: var(--nav-h);
-    overflow: hidden;
+    /* clip sideways only, so nothing below the baseline (the J) is ever cut */
+    overflow-x: clip;
   }
   .hero__inner {
     display: grid;
@@ -313,19 +315,21 @@ const featuredExhibitions = sortExhibitions(exhibitions.filter((e) => e.status !
     text-align: center;
     white-space: nowrap;
     /* leave room below the baseline for the tail of the J */
-    padding-bottom: 0.26em;
+    padding-bottom: 0.42em;
   }
   .hero__letters {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    /* tracking grows a little with the screen, but the word stays one word */
+    gap: clamp(0.02em, calc((100vw - 4.1 * var(--word-size)) / 6), 0.16em);
   }
   .hero__letters .ch {
     display: inline-block;
     overflow: hidden;
     /* the reveal mask must include descenders (the J) */
     padding-top: 0.08em;
-    padding-bottom: 0.3em;
-    margin-bottom: -0.3em;
+    padding-bottom: 0.5em;
+    margin-bottom: -0.5em;
   }
   .hero__letters .ch > span {
     display: inline-block;
